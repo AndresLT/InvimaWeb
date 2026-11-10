@@ -20,25 +20,25 @@ window.VIDEOS = {
 /* ---------- PERSONAJES ----------
    Los nombres los elige la comunidad Invima. Cuando estén, cambiar "nombre". */
 window.PERSONAJES = [
-  { id: "p2", img: "img/p2.webp", nombre: null, perfil: "Servidor de planta · nivel central", rol: "Presenta el protocolo y su propósito. Es la voz de la charla y del video 1.", momento: 1 },
-  { id: "p4", img: "img/p4.webp", nombre: null, perfil: "Contratista joven", rol: "Cuestiona las situaciones normalizadas y recuerda que el protocolo también aplica en el ámbito contractual.", momento: 2 },
-  { id: "p3", img: "img/p3.webp", nombre: null, perfil: "Profesional de inspección en territorio", rol: "Muestra cómo actuar ante una situación y cómo acceder a la ruta desde un grupo territorial.", momento: 3 },
-  { id: "p1", img: "img/p1.webp", nombre: null, perfil: "Servidora de atención a la ciudadanía", rol: "Explica los derechos y las garantías, y aporta la mirada del trato digno a la ciudadanía.", momento: 4, escena: true },
-  { id: "p5", img: "img/p5.webp", nombre: null, perfil: "Líder de equipo · usuario de audífono", rol: "Invita a la corresponsabilidad y abre las conversaciones de equipo.", momento: 5 }
+  { id: "p3", img: "img/p3.webp", nombre: "Gerardo", perfil: "Ingeniero de alimentos · paso fronterizo de Cúcuta", rol: "Trabaja en territorio, en un paso fronterizo. Te presenta el protocolo: qué es, a quién cobija y dónde aplica, también fuera de la sede.", momento: 1 },
+  { id: "p1", img: "img/p1.webp", nombre: null, perfil: "Apoyo administrativo · Secretaría General, sede Chapinero (Bogotá)", rol: "Trabaja en el área administrativa de la sede de Chapinero. Te ayuda a reconocer las situaciones que se han vuelto «normales» y no deberían serlo.", momento: 2, escena: true },
+  { id: "p2", img: "img/p2.webp", nombre: "Julio", perfil: "Contratista", rol: "Recuerda que el protocolo también cobija el ámbito contractual. Te muestra qué hacer y a qué instancia acudir si lo vives o lo ves.", momento: 3 },
+  { id: "p4", img: "img/p4.webp", nombre: "Catalina", perfil: "Oficina de Atención al Ciudadano", rol: "Atiende a la ciudadanía todos los días. Te cuenta tus derechos, las garantías y las medidas que te protegen si decides hablar.", momento: 4 },
+  { id: "p5", img: "img/p5.webp", nombre: "Arturo", perfil: "Coordinador de grupo", rol: "Lidera un equipo y usa audífono. Te invita a llevar lo aprendido a la práctica, con acciones cotidianas de respeto y cuidado.", momento: 5 }
 ];
 
 window.MOMENTOS = [
-  { n: 1, id: "m1", titulo: "Me entero", pregunta: "¿Qué es INVIMA CONSCIENTE?", logro: "Conoces el propósito del protocolo, a quién aplica y qué situaciones contempla.", color: "#004C94", ink: "#fff", pj: "p2", video: "v1", mensaje: "Conocer el protocolo es el primer paso." },
-  { n: 2, id: "m2", titulo: "Lo reconozco", pregunta: "¿Esto que veo es normal?", logro: "Aprendes a identificar situaciones de violencia, discriminación y otras conductas de alerta.", color: "#0FA69D", ink: "#fff", pj: "p4", video: "v2", mensaje: "No todo lo que se ha vuelto frecuente es normal." },
-  { n: 3, id: "m3", titulo: "Sé qué hacer", pregunta: "¿Qué hago si lo vivo o lo veo?", logro: "Conoces las rutas de actuación y las instancias a las que puedes acudir.", color: "#006ECF", ink: "#fff", pj: "p3", video: "v3", mensaje: "Reconocer una situación es importante. Saber qué hacer también." },
-  { n: 4, id: "m4", titulo: "Sé que estoy protegido/a", pregunta: "¿Qué me protege si hablo?", logro: "Conoces tus derechos, las garantías, las medidas de protección y los principios de la atención.", color: "#028183", ink: "#fff", pj: "p1", video: "v4", mensaje: "Conocer las garantías también es conocer tus derechos." },
+  { n: 1, id: "m1", titulo: "Me entero", pregunta: "¿Qué es INVIMA CONSCIENTE?", logro: "Conoces el propósito del protocolo, a quién aplica y qué situaciones contempla.", color: "#004C94", ink: "#fff", pj: "p3", video: "v1", mensaje: "Conocer el protocolo es el primer paso." },
+  { n: 2, id: "m2", titulo: "Lo reconozco", pregunta: "¿Esto que veo es normal?", logro: "Aprendes a identificar situaciones de violencia, discriminación y otras conductas de alerta.", color: "#0FA69D", ink: "#fff", pj: "p1", video: "v2", mensaje: "No todo lo que se ha vuelto frecuente es normal." },
+  { n: 3, id: "m3", titulo: "Sé qué hacer", pregunta: "¿Qué hago si lo vivo o lo veo?", logro: "Conoces las rutas de actuación y las instancias a las que puedes acudir.", color: "#006ECF", ink: "#fff", pj: "p2", video: "v3", mensaje: "Reconocer una situación es importante. Saber qué hacer también." },
+  { n: 4, id: "m4", titulo: "Sé que estoy protegido/a", pregunta: "¿Qué me protege si hablo?", logro: "Conoces tus derechos, las garantías, las medidas de protección y los principios de la atención.", color: "#028183", ink: "#fff", pj: "p4", video: "v4", mensaje: "Conocer las garantías también es conocer tus derechos." },
   { n: 5, id: "m5", titulo: "Lo hago parte de mí", pregunta: "¿Qué puedo hacer para que esta cultura se mantenga?", logro: "Pasas del conocimiento a la acción: tu papel en la construcción de ambientes respetuosos.", color: "#73CC80", ink: "#16324a", pj: "p5", video: "v5", mensaje: "Una cultura de respeto también se construye con las acciones cotidianas." }
 ];
 
 /* ---------- INTRO DE CADA VIDEO ---------- */
 window.VIDEO_INTROS = {
   personajes: {
-    contexto: "Cinco personas de la comunidad Invima te acompañarán en toda la campaña: en los videos, los casos, las piezas gráficas y los dummies de las zonas comunes.",
+    contexto: "Gerardo, Julio, Catalina, Arturo y su compañera de la Secretaría General te acompañarán en toda la campaña: en los videos, los casos, las piezas gráficas y los dummies de las zonas comunes.",
     busca: "Que los conozcas antes de empezar. No son víctimas ni agresores: son guías que hacen preguntas e invitan a reflexionar.",
     fijate: ["¿En qué contexto trabaja cada uno?", "¿Con cuál te identificas más?"]
   },
@@ -81,16 +81,30 @@ window.FRASES = [
 
 /* ---------- M1 · FLASHCARDS: TÉRMINOS ---------- */
 window.CARDS_M1 = [
-  { t: "Comunidad Invima", d: "Servidoras y servidores públicos, contratistas y demás colaboradores. También pasantes, judicantes, practicantes, personal tercerizado o en comisión, proveedores y la ciudadanía que recibe servicios del Instituto." },
-  { t: "Acoso sexual", d: "Persecución, hostigamiento o asedio de carácter sexual, mediado por relaciones de poder verticales u horizontales, que se da una o varias veces contra otra persona en el contexto laboral (Ley 2365 de 2024)." },
-  { t: "Explotación sexual", d: "Aprovechar una posición de poder, la confianza o la vulnerabilidad de alguien para obtener conductas sexuales; por ejemplo, ofrecer contratos o beneficios a cambio." },
-  { t: "Abuso sexual", d: "Toda intrusión física de carácter sexual, cometida o con amenaza de cometerse, por la fuerza, en condiciones de desigualdad o mediante coacción." },
-  { t: "Violencias basadas en género", d: "Agresiones físicas, sexuales, psicológicas, económicas o simbólicas dirigidas a una persona por su género, que se sostienen en estructuras de poder y desigualdad." },
-  { t: "Discriminación", d: "Toda distinción, exclusión o restricción por motivos como orientación sexual, discapacidad, raza, etnia, religión, nacionalidad, ideología política o ciclo de vida, que anula o limita el ejercicio de derechos en igualdad." },
-  { t: "Acoso laboral", d: "Conducta persistente y demostrable que busca infundir miedo, intimidación o angustia, causar perjuicio laboral, desmotivar o inducir la renuncia (Ley 1010 de 2006)." },
-  { t: "Violencia digital", d: "Violencia que se comete o se expande por redes sociales, correo, mensajería y otras plataformas, con el fin de causar daño. El protocolo también aplica en los espacios digitales de trabajo." },
-  { t: "Conducta prohibida vs. desacuerdo", d: "Una conducta prohibida atenta contra la dignidad (acoso, discriminación, abuso de autoridad). Un desacuerdo sobre el trabajo, por sí solo, no lo es: se resuelve en la gestión de la actuación profesional." },
-  { t: "Revictimización", d: "Cuando la persona afectada vuelve a ser dañada, ahora por el sistema; por ejemplo, al tener que contar los hechos una y otra vez." }
+  { g: "Base", t: "Comunidad Invima", d: "Servidoras y servidores públicos, contratistas y demás colaboradores. También pasantes, judicantes, practicantes, personal tercerizado o en comisión, proveedores y la ciudadanía que recibe servicios del Instituto." },
+  { g: "Base", t: "Conducta prohibida", d: "Conductas que atentan contra la dignidad de las personas, como el acoso laboral, el acoso sexual, la discriminación y el abuso de autoridad. El desacuerdo sobre el trabajo, por sí solo, no suele ser una conducta prohibida: se resuelve en la gestión de la actuación profesional." },
+  { g: "Sexual", t: "Acoso sexual", d: "Todo acto de persecución, hostigamiento o asedio de carácter o connotación sexual, lasciva o libidinosa, que se manifiesta en relaciones de poder verticales u horizontales (por edad, sexo, género, orientación, posición laboral, social o económica) y que se da una o varias veces contra otra persona en el contexto laboral (Ley 2365 de 2024)." },
+  { g: "Sexual", t: "Hostigamiento sexual o acoso", d: "Conductas de naturaleza sexual ofensivas o humillantes que interfieren con el trabajo, condicionan una contratación o crean un entorno intimidante u hostil. Puede ser un hecho aislado. Para saber si es ofensiva, se considera la perspectiva de la víctima: va desde miradas y palabras hasta el contacto físico." },
+  { g: "Sexual", t: "Abuso sexual", d: "Toda intrusión física de carácter sexual, cometida o con amenaza de cometerse, ya sea por la fuerza, en condiciones de desigualdad o mediante coacción." },
+  { g: "Sexual", t: "Explotación sexual", d: "Abuso real o intencionado de una posición de poder, de la confianza o de la vulnerabilidad de una persona para obtener conductas sexuales. Incluye ofrecer dinero u otras ventajas, como contratos o beneficios, a cambio." },
+  { g: "Sexual", t: "Violencia sexual", d: "Todo acto sexual, o su tentativa, y los comentarios o insinuaciones sexuales no deseados, ejercidos mediante coacción por otra persona." },
+  { g: "Laboral", t: "Acoso laboral", d: "Toda conducta persistente y demostrable, ejercida por un jefe, un compañero o un subalterno, que busca infundir miedo, intimidación, terror o angustia, causar perjuicio laboral, desmotivar o inducir la renuncia (Ley 1010 de 2006)." },
+  { g: "Laboral", t: "Acoso laboral en razón de género", d: "Situaciones o comportamientos no deseados y repetidos hacia una persona por su sexo o género, con el objetivo de atentar contra su dignidad." },
+  { g: "Discriminación", t: "Discriminación como acoso laboral", d: "La que anula el reconocimiento o el ejercicio de los derechos laborales, y todo trato diferenciado por raza, género, origen familiar o nacional, credo religioso, preferencia política o situación social, o que carezca de razonabilidad laboral." },
+  { g: "Discriminación", t: "Discriminación por discapacidad", d: "Cualquier distinción, exclusión o restricción por motivos de discapacidad que obstaculice o deje sin efecto el reconocimiento o el ejercicio, en igualdad de condiciones, de los derechos y libertades." },
+  { g: "Discriminación", t: "Discriminación racial", d: "Toda distinción, exclusión, restricción o preferencia basada en raza, color, linaje u origen nacional o étnico, que anule o menoscabe el ejercicio de los derechos en condiciones de igualdad." },
+  { g: "Discriminación", t: "Hostigamiento por razones de discriminación", d: "Promover o instigar actos orientados a causar daño físico o moral a una persona, grupo o comunidad por su raza, etnia, religión, nacionalidad, ideología política o filosófica, sexo u orientación sexual." },
+  { g: "Discriminación", t: "Orientación sexual", d: "Es independiente del sexo biológico y de la identidad de género. Se refiere a la capacidad de cada persona de sentir atracción emocional, afectiva y sexual por personas de un género diferente, del mismo género o de más de un género." },
+  { g: "Violencias", t: "Violencias basadas en género", d: "Agresiones físicas, sexuales, psicológicas, económicas o simbólicas dirigidas a una persona por su género, que afectan su integridad y sus derechos, y se sostienen en estructuras de poder y desigualdad." },
+  { g: "Violencias", t: "Violencia psicológica", d: "Acciones u omisiones que degradan o controlan las acciones, creencias y decisiones de una persona mediante intimidación, manipulación, amenazas o aislamiento, y afectan su salud psicológica (Ley 1257 de 2008)." },
+  { g: "Violencias", t: "Violencia física", d: "Ocurre cuando una persona transgrede el espacio corporal de otra o amenaza con causarle daño, como golpes, jalones o empujones." },
+  { g: "Violencias", t: "Violencia económica", d: "Acción u omisión orientada al abuso económico, al control abusivo de las finanzas o a recompensas o castigos monetarios por razón de la condición social, económica o política. Puede darse también en las relaciones laborales." },
+  { g: "Violencias", t: "Violencia patrimonial", d: "Restricción o limitación de los bienes y recursos de una persona destinados a suplir sus necesidades." },
+  { g: "Violencias", t: "Violencia institucional", d: "Daño físico, psicológico, simbólico o social que una persona sufre a manos de agentes o instituciones que deberían protegerla, por el uso abusivo, negligente o discriminatorio del poder." },
+  { g: "Violencias", t: "Violencia digital", d: "También llamada ciberviolencia: se comete y se expande por redes sociales, correo, mensajería y otras plataformas, con el fin de causar daño psicológico, emocional, sexual o económico." },
+  { g: "Violencias", t: "Feminicidio", d: "Causar la muerte a una mujer por su condición de mujer o por motivos de su identidad de género. Es la manifestación más extrema de violencia contra las mujeres (art. 104A del Código Penal)." },
+  { g: "Atención", t: "Revictimización", d: "Sucede cuando una víctima de violencia o abuso vuelve a ser víctima, ahora del sistema, por ejemplo al tener que declarar los hechos en más de una oportunidad." },
+  { g: "Atención", t: "Psicoeducación", d: "Técnica de educación psicológica que brinda información sobre una situación o problemática para fortalecer la adaptación y el afrontamiento." }
 ];
 
 /* ---------- M1 · RETO: ¿VERDADERO O FALSO? ---------- */
@@ -123,15 +137,15 @@ window.SENALES = [
 
 /* ---------- M2 · CASOS PARA RECONOCER ---------- */
 window.QUIZ_M2 = [
-  { ctx: "Planta", pj: "p2", q: "Un compañero insiste en invitar a salir a una servidora y hace comentarios sobre su cuerpo, aunque ella ya le dijo que no le interesa.",
+  { ctx: "Planta", pj: "p1", q: "Un compañero insiste en invitar a salir a una servidora y hace comentarios sobre su cuerpo, aunque ella ya le dijo que no le interesa.",
     pre: "¿Qué tipo de conducta es, según el protocolo?",
     o: ["Acoso sexual", "Un desacuerdo laboral", "Discriminación por ciclo de vida", "No es una conducta del protocolo"], k: 0,
     fb: "Invitar a salir de forma repetida y comentar el cuerpo de alguien son ejemplos de acoso sexual que el protocolo menciona. Puede darse una o varias veces, también por chat o redes." },
-  { ctx: "Reunión de equipo", pj: "p4", q: "En las reuniones se repiten chistes sobre la orientación sexual de un compañero, y el grupo se ríe «porque siempre ha sido así».",
+  { ctx: "Reunión de equipo", pj: "p5", q: "En las reuniones se repiten chistes sobre la orientación sexual de un compañero, y el grupo se ríe «porque siempre ha sido así».",
     pre: "¿Qué tipo de conducta es?",
     o: ["Humor de oficina, no aplica", "Discriminación por orientación sexual", "Acoso laboral por desempeño", "Un conflicto entre dos personas"], k: 1,
     fb: "Las burlas y chistes que reproducen prejuicios homofóbicos están entre los comportamientos que la Comunidad Invima debe evitar. Que sea costumbre no lo hace normal." },
-  { ctx: "Contratista", pj: "p5", q: "A un contratista con discapacidad auditiva dejan de convocarlo a las reuniones porque «es complicado incluirlo», y nadie busca ajustes.",
+  { ctx: "Contratista", pj: "p2", q: "A un contratista con discapacidad auditiva dejan de convocarlo a las reuniones porque «es complicado incluirlo», y nadie busca ajustes.",
     pre: "¿Qué tipo de conducta es?",
     o: ["Una decisión de logística", "Discriminación por discapacidad", "Acoso sexual", "No aplica porque es contratista"], k: 1,
     fb: "Excluir a alguien por su discapacidad, sin buscar ajustes, obstaculiza el ejercicio de sus derechos en igualdad. Y el protocolo también cobija el ámbito contractual." },
@@ -139,11 +153,11 @@ window.QUIZ_M2 = [
     pre: "¿Qué tipo de conducta es?",
     o: ["Violencia basada en género", "Una decisión de la jefatura que no se cuestiona", "Discriminación por nacionalidad", "Un desacuerdo laboral"], k: 0,
     fb: "Limitar las oportunidades de alguien por estereotipos de género es violencia basada en género, que se sostiene en relaciones de poder y desigualdad." },
-  { ctx: "Funciones misionales", pj: "p1", q: "Durante una visita de inspección, alguien sugiere que un concepto favorable podría «agilizarse» a cambio de favores de tipo sexual.",
+  { ctx: "Funciones misionales", pj: "p3", q: "Durante una visita de inspección, alguien sugiere que un concepto favorable podría «agilizarse» a cambio de favores de tipo sexual.",
     pre: "¿Qué tipo de conducta es?",
     o: ["Un trámite irregular, sin más", "Explotación sexual", "Acoso laboral", "Discriminación por ideología"], k: 1,
     fb: "Aprovechar una posición de poder para obtener conductas sexuales, ofreciendo ventajas a cambio, es explotación sexual. El protocolo establece el deber de reportarla." },
-  { ctx: "Reunión de equipo", pj: "p2", q: "Dos colegas discuten en una reunión porque no están de acuerdo con la metodología de un informe. Ambos exponen sus argumentos con respeto.",
+  { ctx: "Reunión de equipo", pj: "p5", q: "Dos colegas discuten en una reunión porque no están de acuerdo con la metodología de un informe. Ambos exponen sus argumentos con respeto.",
     pre: "¿Qué es esta situación?",
     o: ["Acoso laboral", "Discriminación", "Un desacuerdo laboral, no una conducta prohibida", "Violencia psicológica"], k: 2,
     fb: "Un desacuerdo sobre el trabajo, tratado con respeto, no es por sí solo una conducta prohibida: se resuelve en la gestión de la actuación profesional. Distinguirlo también es parte de reconocer." }
@@ -220,7 +234,7 @@ window.FILL_M3 = [
 
 /* ---------- M3 · CASOS PARA ACTUAR ---------- */
 window.QUIZ_M3 = [
-  { ctx: "Testigo · Planta", pj: "p3", q: "Ves que un compañero envía a otra persona mensajes de contenido sexual que ella no quiere recibir. No sabes si intervenir.",
+  { ctx: "Testigo · Planta", pj: "p1", q: "Ves que un compañero envía a otra persona mensajes de contenido sexual que ella no quiere recibir. No sabes si intervenir.",
     pre: "¿Qué es lo más adecuado?",
     o: ["Reenviar capturas al grupo del área para que todos sepan lo que pasa", "Acercarte con discreción a la persona afectada, ofrecerle apoyo e informarle de la ruta; si conoces los hechos, puedes ponerlos en conocimiento de la instancia", "No meterte: es un asunto entre ellos", "Confrontar al compañero frente a toda la oficina"], k: 1,
     fb: "«Si lo ves, nómbralo» significa llevarlo a las instancias del protocolo, no exponerlo. Difundir capturas o confrontar en público rompe la confidencialidad y puede revictimizar." },
@@ -228,7 +242,7 @@ window.QUIZ_M3 = [
     pre: "Como jefe, ¿qué haces?",
     o: ["Llamar al presunto agresor para escuchar su versión y arreglarlo en una reunión", "Prometer guardar el secreto y no volver a tocar el tema", "Agradecer su confianza, escuchar sin juzgar, explicarle la ruta y las garantías, y acompañarla a buscar orientación; la información solo la conocen las instancias autorizadas", "Pedirle que escriba todo con detalle y lo cuente en la próxima reunión de equipo"], k: 2,
     fb: "El acoso sexual no es conciliable y la confrontación con el presunto agresor revictimiza. Escuchar, orientar y cuidar la confidencialidad es lo que corresponde. Si se trata de explotación o abuso sexual, el protocolo establece el deber de reportar." },
-  { ctx: "Atención a la ciudadanía", pj: "p1", q: "En la ventanilla ves que un compañero trata con desprecio a una persona extranjera y retrasa su trámite sin razón.",
+  { ctx: "Atención a la ciudadanía", pj: "p4", q: "En la ventanilla ves que un compañero trata con desprecio a una persona extranjera y retrasa su trámite sin razón.",
     pre: "¿Qué puedes hacer?",
     o: ["Asegurar que la persona reciba un trato digno y sin demoras, y poner la situación en conocimiento del Comité de Convivencia Laboral", "Nada: la persona usuaria puede quejarse si quiere", "Comentarlo en el pasillo para que los demás estén alerta", "Atender tú a la persona y olvidar lo ocurrido"], k: 0,
     fb: "La ruta de discriminación inicia con la queja ante el Comité de Convivencia Laboral (formato GEHU-FOR1, convivencia@invima.gov.co). El trato digno a la ciudadanía también es parte del protocolo." },
@@ -329,7 +343,7 @@ window.FILL_M5 = [
 
 /* ---------- RETO FINAL ---------- */
 window.QUIZ_FINAL = [
-  { ctx: "Garantías", pj: "p1", q: "Después de buscar orientación, Laura empieza a ser excluida de tareas y escucha comentarios sobre «quién habló».",
+  { ctx: "Garantías", pj: "p4", q: "Después de buscar orientación, Laura empieza a ser excluida de tareas y escucha comentarios sobre «quién habló».",
     pre: "¿Qué dice el protocolo?",
     o: ["Es normal que el ambiente cambie después de una queja", "Son represalias: debe ponerse en conocimiento, porque las medidas de protección no pueden desmejorar su condición y tiene derecho a su estabilidad", "Laura debería retirar la queja para calmar el ambiente", "Solo aplica si Laura es de planta"], k: 1,
     fb: "La protección frente a represalias es una garantía central del protocolo." },
@@ -345,26 +359,25 @@ window.QUIZ_FINAL = [
     fb: "La frase comunica que hay orientación, acompañamiento y garantías disponibles cuando la persona decida buscarlas." }
 ];
 
-window.CONTEXTOS = [
-  { t: "Servidoras y servidores de planta", d: "Charla, talleres de casos, dummies, QR y mural en la sede Bogotá.", i: "building" },
-  { t: "Contratistas", d: "Video 1 y «La ruta en una página» al inicio del contrato. El protocolo también los cobija.", i: "doc" },
-  { t: "Grupos territoriales", d: "Charla y talleres virtuales, videos, actividades en línea y Padlet.", i: "pin" },
-  { t: "Atención a la ciudadanía e IVC", d: "Casos en funciones misionales y trato digno a la ciudadanía.", i: "users" },
-  { t: "Líderes y jefes", d: "Cómo recibir un relato sin revictimizar y orientar hacia la ruta.", i: "star" }
+window.MATERIAL = [
+  { i: "clock", t: "Corto", d: "Videos de uno o dos minutos y páginas que se leen de un vistazo." },
+  { i: "eye", t: "Visual", d: "Personajes, íconos e ilustraciones en lugar de grandes bloques de texto." },
+  { i: "users", t: "Cotidiano", d: "Casos hipotéticos basados en situaciones del día a día en el Invima." },
+  { i: "puzzle", t: "Práctico", d: "Retos para aplicar lo aprendido, con retroalimentación inmediata." },
+  { i: "route", t: "A la mano", d: "La ruta en una página y el protocolo completo, para consultarlos cuando los necesites." }
 ];
 
-window.VINCULOS = ["Planta · sede Bogotá", "Contratista", "Grupo territorial", "Atención a la ciudadanía / IVC", "Líder o jefe", "Otro vínculo"];
 
 /* Actividades calificables (para el panel y el cierre) */
 window.ACTS = [
   { id: "m1-reto", n: "¿Verdadero o falso? · A quién y dónde aplica", m: 1 },
-  { id: "m1-tarjetas", n: "Tarjetas · Términos clave (autoevaluación)", m: 1 },
+  { id: "m1-tarjetas", n: "Tarjetas · Definiciones del protocolo", m: 1 },
   { id: "m2-casos", n: "Casos para reconocer", m: 2 },
   { id: "m2-relaciona", n: "Relaciona situación y conducta", m: 2 },
   { id: "m3-completa", n: "Completa la ruta", m: 3 },
   { id: "m3-casos", n: "Casos para actuar", m: 3 },
   { id: "m3-relaciona", n: "Relaciona situación e instancia", m: 3 },
-  { id: "m4-tarjetas", n: "Tarjetas · Principios (autoevaluación)", m: 4 },
+  { id: "m4-tarjetas", n: "Tarjetas · Principios", m: 4 },
   { id: "m4-mitos", n: "Mitos y realidades", m: 4 },
   { id: "m5-frases", n: "Completa la frase", m: 5 },
   { id: "final", n: "Reto final", m: 5 }

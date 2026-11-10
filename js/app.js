@@ -52,7 +52,8 @@ const brandDots = () => `<div class="brand-dots" aria-hidden="true">${["#004C94"
 
 /* ---------------- TRACKING (anónimo) ---------------- */
 const LS = "invima-consciente-v1";
-const blank = () => ({ v: 1, visits: 0, first: null, last: null, vinc: null, seen: {}, vids: {}, acts: {}, val: {}, mural: {}, acciones: [] });
+const PROTOCOLO = "docs/protocolo-invima-consciente.pdf";
+const blank = () => ({ v: 1, visits: 0, first: null, last: null, seen: {}, vids: {}, acts: {}, val: {}, mural: {}, acciones: [] });
 let S = blank();
 try { const raw = localStorage.getItem(LS); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
 const Remote = { db: null, ref: null, ok: false, busy: false, dirty: false, canPanel: false };
@@ -99,7 +100,7 @@ async function initRemote() {
       const merged = Object.assign(blank(), d);
       for (const k of ["seen", "vids", "acts"]) merged[k] = Object.assign({}, d[k] || {}, S[k] || {});
       merged.visits = Math.max(d.visits || 0, S.visits || 0);
-      merged.vinc = S.vinc || d.vinc || null; merged.val = Object.assign({}, d.val, S.val); merged.mural = Object.assign({}, d.mural, S.mural);
+      merged.val = Object.assign({}, d.val, S.val); merged.mural = Object.assign({}, d.mural, S.mural);
       merged.acciones = (S.acciones && S.acciones.length) ? S.acciones : (d.acciones || []);
       merged.first = d.first || S.first;
       S = merged;
@@ -117,7 +118,6 @@ async function initRemote() {
 /* ---------------- HELPERS ---------------- */
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2400); }
 function pjImg(id, cls = "") { const p = PJ[id]; return `<img src="${p.img}" alt="Personaje: ${esc(p.perfil)}" class="${p.escena ? "scene " : ""}${cls}" loading="lazy">`; }
-function pjName(p) { return p.nombre ? esc(p.nombre) : `Nombre por elegir`; }
 function ring(pct, color) {
   const r = 80, c = 2 * Math.PI * r;
   return `<svg width="190" height="190" viewBox="0 0 190 190"><circle cx="95" cy="95" r="${r}" fill="none" stroke="#e8eef3" stroke-width="16"/><circle cx="95" cy="95" r="${r}" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}" style="transition:stroke-dashoffset 1s"/></svg>`;
@@ -148,13 +148,13 @@ function videoPage(key, n) {
 
 /* ---------------- QUIZ ENGINE ---------------- */
 function quiz(el, id, items, opt = {}) {
-  let i = 0, ans = [], score = 0;
+  let i = 0, ans = [], picked = [], score = 0;
   const tf = items[0].o.length === 2;
   function render() {
     if (i >= items.length) return result();
     const it = items[i];
     el.innerHTML = `<div class="quiz">
-      ${opt.side !== false && it.pj ? `<div class="qside">${pjImg(it.pj)}</div>` : ""}
+      ${opt.side !== false && it.pj ? `<div class="qside">${pjImg(it.pj)}<div class="qname">${pjLabel(it.pj)}</div></div>` : ""}
       <div class="qmain">
         <div class="qhead"><div class="qsteps">${items.map((_, k) => `<i class="${k < i ? (ans[k] ? "ok" : "bad") : k === i ? "cur" : ""}"></i>`).join("")}</div>
           <span class="small">${i + 1} de ${items.length}</span>${it.ctx ? `<span class="qctx">${esc(it.ctx)}</span>` : ""}</div>
@@ -168,61 +168,103 @@ function quiz(el, id, items, opt = {}) {
   }
   function pick(k) {
     const it = items[i], ok = k === it.k;
-    ans[i] = ok; if (ok) score++;
+    ans[i] = ok; picked[i] = k; if (ok) score++;
     $$(".opt", el).forEach(b => { const kk = +b.dataset.k; b.disabled = true; if (kk === it.k) b.classList.add("ok"); else if (kk === k) b.classList.add("bad"); });
     $(".fbz", el).innerHTML = `<div class="fb ${ok ? "ok" : "bad"}">${ic(ok ? "check" : "info")}<div><b>${ok ? "¡Así es!" : "No exactamente."}</b> ${esc(it.fb)}</div></div>`;
     $(".qfoot", el).innerHTML = `<button class="btn mc sm">${i + 1 < items.length ? "Siguiente" : "Ver resultado"} ${ic("right", 18)}</button>`;
-    $(".qfoot .btn", el).onclick = () => { i++; render(); };
+    $(".qfoot .btn", el).onclick = () => { i++; render(); scrollTopMob(el); };
     $$(".qsteps i", el)[i].className = ok ? "ok" : "bad";
   }
   function result() {
     const pct = score / items.length;
     Track.act(id, score, items.length, Object.fromEntries(ans.map((a, k) => [k, a ? 1 : 0])));
-    el.innerHTML = `<div class="result"><div class="ring">${ring(pct, "var(--mc)")}<div class="v"><div>${score}/${items.length}<small>respuestas</small></div></div></div>
-      <div><div class="kicker">Tu resultado</div><h3 class="h2" style="font-size:30px">${msgFor(pct)}</h3>
-      <p class="lead" style="font-size:16.5px">${esc(opt.cierre || "Cada caso es hipotético y tiene una finalidad pedagógica. Esto no es una evaluación: es una oportunidad para practicar.")}</p>
-      <div class="row mt24"><button class="btn alt sm rq">${ic("flip", 18)} Intentar de nuevo</button><button class="btn mc sm nx">Continuar ${ic("right", 18)}</button></div></div></div>`;
-    $(".rq", el).onclick = () => { i = 0; ans = []; score = 0; render(); };
+    el.innerHTML = `<div class="result2">
+      <div class="rleft"><div class="ring">${ring(pct, "var(--mc)")}<div class="v"><div>${score}/${items.length}<small>correctas</small></div></div></div>
+        <div class="kicker mt16">Tu resultado</div><h3 class="h2" style="font-size:26px">${msgFor(pct)}</h3>
+        <p class="small" style="font-size:14.5px">${esc(opt.cierre || "Cada caso es hipotético y tiene una finalidad pedagógica. Es una oportunidad para practicar.")}</p>
+        <div class="row mt16 rbtns" style="gap:10px"><button class="btn alt sm rq">${ic("flip", 18)} Reintentar</button><button class="btn mc sm nx">Continuar ${ic("right", 18)}</button></div></div>
+      <div class="rlist"><h4 class="fh">Revisa tus respuestas</h4>
+        ${items.map((it, k) => `<div class="ritem ${ans[k] ? "ok" : "bad"}"><span class="rk">${ic(ans[k] ? "check" : "x", 16, 3)}</span><div>
+          <div class="rq">${k + 1}. ${esc(it.q)}</div>
+          <div class="ra">Tu respuesta: <b>${esc(it.o[picked[k]])}</b></div>
+          ${ans[k] ? "" : `<div class="ra good">Respuesta correcta: <b>${esc(it.o[it.k])}</b></div>`}
+          <div class="rf">${esc(it.fb)}</div></div></div>`).join("")}
+      </div></div>`;
+    $(".rq", el).onclick = () => { i = 0; ans = []; picked = []; score = 0; render(); };
     $(".nx", el).onclick = () => go(cur + 1);
   }
   render();
 }
+function scrollTopMob(el) { if (document.body.classList.contains("mob")) { const pg = el.closest(".page"); pg && pg.scrollIntoView({ block: "start" }); } }
+function pjLabel(id) { const p = PJ[id]; return `<b>${p.nombre ? esc(p.nombre) : "Secretaría General"}</b>${esc(p.perfil.split(" · ")[0])}`; }
 
 /* ---------------- FLASHCARDS ---------------- */
 function deck(el, id, cards) {
-  let i = 0; const st = (S.acts[id] && S.acts[id].cards) ? S.acts[id].cards.slice() : cards.map(() => null);
+  let i = 0, view = "cards";
+  const prev = S.acts[id] && S.acts[id].cards;
+  const st = (prev && prev.length === cards.length) ? prev.slice() : cards.map(() => null);
+  const rated = () => st.filter(x => x !== null).length, known = () => st.filter(x => x === 1).length;
   function save() {
-    const known = st.filter(x => x === 1).length, rated = st.filter(x => x !== null).length;
-    if (rated === cards.length) {
-      const a = S.acts[id] || { n: 0 }; const firstDone = !a.f;
-      a.cards = st.slice(); a.s = known; a.t = cards.length; a.at = Date.now();
-      if (firstDone) { a.f = { s: known, t: cards.length, ans: Object.fromEntries(st.map((x, k) => [k, x])) }; a.n = 1; }
-      S.acts[id] = a; persist(); refreshProgress();
-      if (firstDone) toast(`¡Mazo completo! Conocías ${known} de ${cards.length}.`);
-    } else { const a = S.acts[id] || { n: 0 }; a.cards = st.slice(); S.acts[id] = a; persist(); }
+    const a = S.acts[id] || { n: 0 }; a.cards = st.slice();
+    if (rated() === cards.length) { a.s = known(); a.t = cards.length; a.at = Date.now(); if (!a.f) { a.f = { s: known(), t: cards.length, ans: Object.fromEntries(st.map((x, k) => [k, x])) }; a.n = 1; } }
+    S.acts[id] = a; persist(); refreshProgress();
+  }
+  function selfHtml() {
+    return `<span>¿Ya lo sabías?</span><button class="sbtn yes ${st[i] === 1 ? "on" : ""}" data-v="1" aria-pressed="${st[i] === 1}">${st[i] === 1 ? ic("check", 15, 3) : ""} Sí, lo sabía</button><button class="sbtn no ${st[i] === 0 ? "on" : ""}" data-v="0" aria-pressed="${st[i] === 0}">${st[i] === 0 ? ic("flip", 15, 3) : ""} Aún no · repasar</button>`;
+  }
+  function sideHtml() {
+    const r = rated(), all = r === cards.length;
+    return `<p class="small">Lee el término, intenta explicarlo con tus palabras y voltea la tarjeta. Después marca si ya lo sabías.</p>
+      <div class="thumbs">${cards.map((k, j) => `<button data-j="${j}" class="${j === i ? "cur" : ""} ${st[j] === 1 ? "y" : st[j] === 0 ? "n" : ""}">${esc(k.t)}</button>`).join("")}</div>
+      <div class="darrows"><button class="btn alt sm pv" aria-label="Tarjeta anterior" ${i === 0 ? "disabled" : ""}>${ic("left", 18)}</button><button class="btn alt sm nx">Siguiente ${ic("right", 18)}</button>
+        <button class="btn mc sm vr" ${r ? "" : "disabled"}>${ic("chart", 18)} Ver resultado</button></div>
+      <p class="small">${r} de ${cards.length} tarjetas marcadas${all ? " · ¡completaste el mazo!" : ""}.</p>`;
+  }
+  function wireSide() {
+    $$(".thumbs button", el).forEach(b => b.onclick = () => { i = +b.dataset.j; render(); });
+    $(".pv", el).onclick = () => { if (i > 0) { i--; render(); } };
+    $(".nx", el).onclick = () => { i = (i + 1) % cards.length; render(); };
+    $(".vr", el).onclick = () => { view = "result"; render(); scrollTopMob(el); };
+  }
+  function wireSelf() {
+    $$(".sbtn", el).forEach(b => b.onclick = e => {
+      e.stopPropagation(); st[i] = +b.dataset.v; save();
+      $(".self", el).innerHTML = selfHtml(); wireSelf();
+      $(".dside", el).innerHTML = sideHtml(); wireSide();
+      $(".saved", el).textContent = st[i] === 1 ? "✓ Marcada como «lo sabía»" : "↺ Marcada para repasar";
+    });
   }
   function render() {
+    if (view === "result") return result();
     const c = cards[i];
     el.innerHTML = `<div class="deck">
       <div class="fcard" tabindex="0" role="button" aria-label="Tarjeta ${i + 1}: ${esc(c.t)}. Pulsa para voltear.">
         <div class="in">
-          <div class="fface ffront"><span class="dec">${brandDots()}</span><span class="n">TARJETA ${String(i + 1).padStart(2, "0")} / ${cards.length}</span><h3>${esc(c.t)}</h3><span class="hint">${ic("flip", 16)} Toca para voltear</span></div>
+          <div class="fface ffront"><span class="dec">${brandDots()}</span><span class="n">TARJETA ${String(i + 1).padStart(2, "0")} / ${cards.length}${c.g ? " · " + esc(c.g.toUpperCase()) : ""}</span><h3>${esc(c.t)}</h3><span class="hint">${ic("flip", 16)} Toca para voltear</span></div>
           <div class="fface fback"><h4>${esc(c.t)}</h4><p>${esc(c.d)}</p>
-            <div class="self"><span>¿Ya lo sabías?</span><button class="sbtn yes ${st[i] === 1 ? "on" : ""}" data-v="1">Sí, lo sabía</button><button class="sbtn no ${st[i] === 0 ? "on" : ""}" data-v="0">Aún no · repasar</button></div></div>
+            <div class="self">${selfHtml()}</div><div class="saved" aria-live="polite"></div></div>
         </div></div>
-      <div class="dside">
-        <p class="small">Lee el término, intenta definirlo con tus palabras y voltea la tarjeta. Luego autoevalúate: nadie más ve tus respuestas individuales.</p>
-        <div class="thumbs">${cards.map((k, j) => `<button data-j="${j}" class="${j === i ? "cur" : ""} ${st[j] === 1 ? "y" : st[j] === 0 ? "n" : ""}">${esc(k.t)}</button>`).join("")}</div>
-        <div class="darrows mt8"><button class="btn alt sm pv" ${i === 0 ? "disabled" : ""}>${ic("left", 18)}</button><button class="btn mc sm nx">${i + 1 < cards.length ? "Siguiente tarjeta" : "Primera tarjeta"} ${ic("right", 18)}</button></div>
-        <p class="small">${st.filter(x => x === 1).length} de ${cards.length} marcadas como «lo sabía».</p>
-      </div></div>`;
+      <div class="dside">${sideHtml()}</div></div>`;
     const fc = $(".fcard", el);
     fc.onclick = e => { if (e.target.closest(".sbtn")) return; fc.classList.toggle("flip"); };
     fc.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fc.classList.toggle("flip"); } };
-    $$(".sbtn", el).forEach(b => b.onclick = e => { e.stopPropagation(); st[i] = +b.dataset.v; save(); setTimeout(() => { i = (i + 1) % cards.length; render(); }, 250); });
-    $$(".thumbs button", el).forEach(b => b.onclick = () => { i = +b.dataset.j; render(); });
-    $(".pv", el).onclick = () => { if (i > 0) { i--; render(); } };
-    $(".nx", el).onclick = () => { i = (i + 1) % cards.length; render(); };
+    wireSelf(); wireSide();
+  }
+  function result() {
+    const r = rated(), k = known(), rev = cards.map((c, j) => ({ c, j })).filter(x => st[x.j] === 0), pend = cards.map((c, j) => ({ c, j })).filter(x => st[x.j] === null);
+    el.innerHTML = `<div class="result2">
+      <div class="rleft"><div class="ring">${ring(cards.length ? k / cards.length : 0, "var(--mc)")}<div class="v"><div>${k}/${cards.length}<small>lo sabías</small></div></div></div>
+        <div class="kicker mt16">Tu resultado</div><h3 class="h2" style="font-size:26px">${r < cards.length ? `Llevas ${r} de ${cards.length} tarjetas` : msgFor(k / cards.length)}</h3>
+        <p class="small" style="font-size:14.5px">Es una autoevaluación: te ayuda a saber qué conceptos vale la pena repasar.</p>
+        <div class="row mt16 rbtns" style="gap:10px"><button class="btn alt sm bk">${ic("card", 18)} Volver a las tarjetas</button><button class="btn mc sm nx2">Continuar ${ic("right", 18)}</button></div></div>
+      <div class="rlist"><h4 class="fh">Para repasar (${rev.length})</h4>
+        ${rev.length ? `<div class="vchips">${rev.map(x => `<button class="chip go-card" data-j="${x.j}">${ic("flip", 14)} ${esc(x.c.t)}</button>`).join("")}</div>` : `<p class="small">¡Nada pendiente por repasar!</p>`}
+        ${pend.length ? `<h4 class="fh mt16">Sin marcar (${pend.length})</h4><div class="vchips">${pend.map(x => `<button class="chip go-card" data-j="${x.j}">${esc(x.c.t)}</button>`).join("")}</div>` : ""}
+        <h4 class="fh mt16">Lo sabías (${k})</h4><div class="vchips">${cards.map((c, j) => st[j] === 1 ? `<span class="chip" style="background:#e6f6ee;color:var(--ok)">${ic("check", 14, 3)} ${esc(c.t)}</span>` : "").join("")}</div>
+      </div></div>`;
+    $(".bk", el).onclick = () => { view = "cards"; render(); };
+    $(".nx2", el).onclick = () => go(cur + 1);
+    $$(".go-card", el).forEach(b => b.onclick = () => { i = +b.dataset.j; view = "cards"; render(); });
   }
   render();
 }
@@ -237,7 +279,7 @@ function match(el, id, pairs, seed) {
     el.innerHTML = `<div class="match">
       <div class="mcol">${pairs.map((p, k) => { const n = link[k]; const ci = n !== undefined ? k : -1;
         const st = checked ? (link[k] === k ? "ok" : "bad") : "";
-        return `<button class="mitem l ${sel === k ? "sel" : ""} ${n !== undefined ? "paired" : ""} ${st}" data-l="${k}"><span class="badge" style="${n !== undefined ? `background:${PCOL[k % 6]}` : ""}">${k + 1}</span>${esc(p.a)}</button>`; }).join("")}</div>
+        return `<button class="mitem l ${sel === k ? "sel" : ""} ${n !== undefined ? "paired" : ""} ${st}" data-l="${k}"><span class="badge" style="${n !== undefined ? `background:${PCOL[k % 6]}` : ""}">${k + 1}</span><span>${esc(p.a)}${checked && link[k] !== k ? `<span class="corr">Correcta: <b>${esc(p.b)}</b></span>` : ""}</span></button>`; }).join("")}</div>
       <div class="mcol">${right.map(r => { const lk = Object.keys(link).find(x => link[x] === r.k); const ci = lk !== undefined ? +lk : -1;
         const st = checked && lk !== undefined ? (+lk === r.k ? "ok" : "bad") : "";
         return `<button class="mitem r ${lk !== undefined ? "paired" : ""} ${st}" data-r="${r.k}">${esc(r.b)}<span class="badge" style="${lk !== undefined ? `background:${PCOL[ci % 6]}` : ""}">${lk !== undefined ? ci + 1 : ""}</span></button>`; }).join("")}</div>
@@ -293,24 +335,23 @@ add("portada", "Inicio", 0, () => `<div class="pg" style="padding:0">
     <p style="font-size:16px;opacity:.85;margin-top:12px;max-width:520px;line-height:1.5">Conoce el protocolo, reconoce lo que no es normal, aprende qué hacer y descubre lo que te protege.</p>
     <div class="row mt32" style="gap:12px"><button class="btn" style="background:#fff;color:var(--navy)" data-go="1">Comenzar ${ic("right", 18)}</button><button class="btn" style="background:rgba(255,255,255,.14);box-shadow:none" data-toc>${ic("menu", 18)} Ver contenido</button></div>
   </div>
-  <div class="people abs-m" aria-hidden="true">${["p4", "p2", "p5"].map((id, k) => `<img src="${PJ[id].img}" alt="" class="${k === 1 ? "" : "s"}">`).join("")}</div>
+  <div class="people abs-m" aria-hidden="true">${["p4", "p3", "p5"].map((id, k) => `<img src="${PJ[id].img}" alt="" class="${k === 1 ? "" : "s"}">`).join("")}</div>
 </div>`, null, "cover");
 
 /* BIENVENIDA */
 add("bienvenida", "Bienvenida", 0, () => `<div class="pg">
   <div class="kicker">Bienvenida</div><h1 class="h1">Esta cartilla es para ti</h1>
   <p class="lead">Es un recurso para conocer la estrategia <b>INVIMA CONSCIENTE</b>, comprender el protocolo y practicar con situaciones cotidianas. Puedes recorrerla en orden o volver cuando la necesites.</p>
-  <div class="g4 mt24">${[["video", "Videos", "Cinco capítulos cortos, cada uno con su presentación."], ["users", "Casos", "Situaciones hipotéticas para reconocer y actuar."], ["card", "Tarjetas", "Conceptos y principios para voltear y autoevaluarte."], ["puzzle", "Retos", "Relaciona, completa y elige. Se califican solos."]]
+  <div class="g4 mt24">${[["video", "Videos", "Capítulos cortos, cada uno con su presentación."], ["users", "Casos", "Situaciones hipotéticas para reconocer y actuar."], ["card", "Tarjetas", "Definiciones y principios para voltear y repasar."], ["puzzle", "Retos", "Relaciona, completa y elige la respuesta."]]
     .map(([i, t, d]) => `<div class="tile"><div class="icobox">${ic(i)}</div><div><h4>${t}</h4><p>${d}</p></div></div>`).join("")}</div>
   <div class="row mt24" style="gap:22px;align-items:stretch">
-    <div class="card" style="flex:1.3"><h4 class="fh" style="font-size:16px;color:var(--navy);margin-bottom:6px">¿Desde dónde participas? <span class="small" style="font-weight:400">· opcional y anónimo</span></h4>
-      <p class="small" style="margin-bottom:12px">Nos ayuda a saber si la estrategia llega a todos los contextos de la entidad.</p>
-      <div class="vchips">${VINCULOS.map(v => `<button data-v="${esc(v)}" class="${S.vinc === v ? "on" : ""}">${esc(v)}</button>`).join("")}</div></div>
+    <div class="card" style="flex:1.3"><h4 class="fh" style="font-size:16px;color:var(--navy);margin-bottom:12px">Cómo recorrerla</h4>
+      <div class="g3" style="gap:12px">${[["right", "Pasa las páginas con las flechas de abajo o del teclado. En el celular, desliza."], ["menu", "Usa «Contenido» para ir directo a cualquier sección."], ["clock", "Te toma unos 30 minutos y tu avance queda guardado en este dispositivo."]]
+        .map(([i, t]) => `<div class="small" style="display:flex;gap:10px;font-size:14px;color:var(--ink)"><span class="icobox" style="width:36px;height:36px;border-radius:10px">${ic(i, 18)}</span><span>${t}</span></div>`).join("")}</div></div>
     <div class="card" style="flex:1;display:flex;gap:14px;align-items:flex-start"><div class="icobox" style="background:var(--mint);color:var(--t2)">${ic("lock")}</div>
-      <div class="small" style="font-size:14px"><b class="fh" style="color:var(--navy);font-size:15px">Tu participación es anónima</b><br>Tus respuestas se guardan sin tu nombre y solo se usan como totales para medir la estrategia. Duración aproximada: 30 minutos. Tu avance queda guardado.</div></div>
+      <div class="small" style="font-size:14px"><b class="fh" style="color:var(--navy);font-size:15px">Tu participación es anónima</b><br>No te pedimos tu nombre ni datos personales. Nadie sabe quién respondió qué.</div></div>
   </div>
-  <p class="small mt16">Usa las flechas ← → del teclado o los botones de abajo para pasar las páginas.</p>
-</div>`, el => { $$(".vchips button", el).forEach(b => b.onclick = () => { const on = S.vinc === b.dataset.v; Track.set("vinc", on ? null : b.dataset.v); $$(".vchips button", el).forEach(x => x.classList.toggle("on", !on && x === b)); }); });
+</div>`);
 
 /* QUÉ ES */
 add("que-es", "¿Qué es INVIMA CONSCIENTE?", 0, () => `<div class="pg">
@@ -346,28 +387,27 @@ add("no-es-normal", "Campaña NO ES NORMAL", 0, () => `<div class="pg">
 
 /* CREACIÓN DEL MATERIAL */
 add("como-se-creo", "Cómo se creó este material", 0, () => `<div class="pg">
-  <div class="kicker">Detrás de la cartilla</div><h2 class="h2">Un material construido con la comunidad</h2>
+  <div class="kicker">Detrás de la cartilla</div><h2 class="h2">Un material práctico y fácil de digerir</h2>
   <div class="row mt8" style="gap:36px">
     <div style="flex:1">
-      <p class="lead" style="font-size:16.5px">Partimos de una encuesta de diagnóstico a la comunidad Invima, que preguntó cuánto se conocía el protocolo y cómo preferían que se divulgara. Las opciones más votadas definieron los formatos:</p>
+      <p class="lead" style="font-size:16.5px">Partimos de una encuesta de diagnóstico a la comunidad Invima: cuánto se conocía el protocolo y cómo preferían que se divulgara. Las opciones más votadas definieron los formatos:</p>
       <div class="vchips mt16">${["Charlas con diapositivas", "Videos cortos", "Casos prácticos", "Piezas gráficas", "Dummies y QR"].map(x => `<span class="chip">${ic("check", 16)} ${x}</span>`).join("")}</div>
-      <p class="lead mt24" style="font-size:16.5px">La estrategia se articula con Talento Humano: inducción, reinducción, Plan Institucional de Capacitación, bienestar y SST, para que no dependa de una campaña puntual.</p>
+      <p class="lead mt24" style="font-size:16.5px">El protocolo es un documento extenso. Aquí lo convertimos en lo esencial: qué es, cómo reconocer una situación, qué hacer y qué te protege.</p>
       <div class="note mt24">${ic("info", 20)}<span>Los casos de esta cartilla son <b>hipotéticos</b> y tienen finalidad pedagógica. Las rutas se presentan conforme al texto oficial del protocolo.</span></div>
     </div>
-    <div style="flex:1.1"><h4 class="fh" style="color:var(--navy);font-size:15px;margin-bottom:10px">Pensada para cinco contextos</h4>
-      <div class="col" style="gap:9px">${CONTEXTOS.map(c => `<div class="tile" style="padding:12px 14px;align-items:center"><div class="icobox" style="width:40px;height:40px">${ic(c.i, 20)}</div><div><h4 style="font-size:14.5px">${esc(c.t)}</h4><p style="font-size:13.5px">${esc(c.d)}</p></div></div>`).join("")}</div></div>
+    <div style="flex:1.1"><h4 class="fh" style="color:var(--navy);font-size:15px;margin-bottom:10px">Así lo hicimos</h4>
+      <div class="col" style="gap:9px">${MATERIAL.map(c => `<div class="tile" style="padding:12px 14px;align-items:center"><div class="icobox" style="width:40px;height:40px">${ic(c.i, 20)}</div><div><h4 style="font-size:15px">${esc(c.t)}</h4><p style="font-size:13.5px">${esc(c.d)}</p></div></div>`).join("")}</div></div>
   </div></div>`);
 
 /* PERSONAJES */
 add("personajes", "Los personajes", 0, () => `<div class="pg">
-  <div class="row" style="justify-content:space-between;align-items:flex-end"><div><div class="kicker">Te acompañan</div><h2 class="h2">Conoce a los personajes</h2></div>
-  <div class="note" style="max-width:440px">${ic("star", 20)}<span><b>¡Tú eliges sus nombres!</b> La comunidad Invima propone, vota y elige cómo se llamarán.</span></div></div>
-  <p class="lead" style="font-size:16px;max-width:none">No son víctimas ni agresores: son guías que hacen preguntas, invitan a reflexionar y te orientan. Toca cada tarjeta para conocer su rol.</p>
-  <div class="g4 mt16" style="grid-template-columns:repeat(5,1fr);flex:1">${PERSONAJES.map(p => { const m = MOM[p.momento]; return `<div class="pjcard" tabindex="0" role="button">
+  <div class="kicker">Te acompañan</div><h2 class="h2">Conoce a los personajes</h2>
+  <p class="lead" style="font-size:16px;max-width:none">No son víctimas ni agresores: son compañeros que hacen preguntas, invitan a reflexionar y te orientan en cada momento. Toca cada tarjeta para conocer su rol.</p>
+  <div class="g4 mt16 pjgrid" style="grid-template-columns:repeat(5,1fr);flex:1">${PERSONAJES.map(p => { const m = MOM[p.momento]; return `<div class="pjcard" tabindex="0" role="button">
     <span class="mtag" style="background:${m.color};color:${m.ink}">${m.n} · ${esc(m.titulo)}</span>
     <div class="img">${pjImg(p.id)}</div>
-    <div class="tx"><div class="nm">${p.nombre ? esc(p.nombre) : `<em>Nombre por elegir</em>`}</div><div class="pf">${esc(p.perfil)}</div><div class="small" style="margin-top:6px;color:var(--b2);font-weight:600">Toca para ver su rol →</div></div>
-    <div class="rol"><b>${esc(p.perfil)}</b>${esc(p.rol)}</div></div>`; }).join("")}</div>
+    <div class="tx"><div class="nm">${p.nombre ? esc(p.nombre) : `<em>Nombre por confirmar</em>`}</div><div class="pf">${esc(p.perfil)}</div><div class="small" style="margin-top:6px;color:var(--b2);font-weight:600">Toca para ver su rol →</div></div>
+    <div class="rol"><b>${p.nombre ? esc(p.nombre) + " · " : ""}Momento ${m.n}</b>${esc(p.rol)}</div></div>`; }).join("")}</div>
   <div class="row mt16" style="justify-content:flex-end"><button class="btn mc sm" data-go="+1">${ic("video", 18)} Ver el video de presentación</button></div>
 </div>`, el => { $$(".pjcard", el).forEach(c => { c.onclick = () => c.classList.toggle("show"); c.onkeydown = e => { if (e.key === "Enter") c.classList.toggle("show"); }; }); });
 add("personajes-video", "Los personajes · Video", 0, () => videoPage("personajes", 0));
@@ -399,19 +439,18 @@ add("m1", momKicker(1), 1, introPage(1), null, "mintro");
 add("m1-video", momKicker(1) + " · Video", 1, () => videoPage("v1", 1));
 add("m1-alcance", momKicker(1) + " · A quién y dónde aplica", 1, () => `<div class="pg">
   ${head(1, momKicker(1), "¿A quién cobija y dónde aplica?")}
-  <div class="row mt8" style="gap:30px;flex:1">
-    <div style="flex:1"><h4 class="fh" style="color:var(--navy);margin-bottom:10px">La Comunidad Invima</h4>
-      <div class="vchips">${["Servidoras y servidores públicos", "Contratistas", "Pasantes, judicantes y practicantes", "Personal tercerizado", "Personal en comisión", "Proveedores", "Ciudadanía que recibe servicios"].map(x => `<span class="chip" style="background:var(--sky)">${ic("user", 16)} ${x}</span>`).join("")}</div>
-      <h4 class="fh" style="color:var(--navy);margin:22px 0 10px">Qué situaciones contempla</h4>
-      <div class="g2" style="gap:8px">${["Acoso sexual", "Explotación y abuso sexual", "Violencia basada en género", "Acoso laboral", "Discriminación por orientación sexual o identidad de género", "Discriminación por discapacidad", "Discriminación por raza o etnia", "Discriminación por religión, nacionalidad, ideología política o ciclo de vida"].map(x => `<div class="small" style="display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--ink)"><span style="color:var(--b2)">${ic("check", 18)}</span>${x}</div>`).join("")}</div>
+  <p class="small" style="font-size:14.5px;margin-top:-2px">El protocolo cobija a toda la <b>Comunidad Invima</b>:</p>
+  <div class="ilus">${ilustraComunidad()}</div>
+  <div class="row mt8 alc" style="gap:30px">
+    <div style="flex:1"><h4 class="fh" style="color:var(--navy);margin-bottom:8px;font-size:15px">Qué situaciones contempla</h4>
+      <div class="g2" style="gap:6px 14px">${["Acoso sexual", "Explotación y abuso sexual", "Violencia basada en género", "Acoso laboral", "Discriminación por orientación sexual", "Discriminación por discapacidad", "Discriminación por raza o etnia", "Discriminación por religión, nacionalidad, ideología o ciclo de vida"].map(x => `<div class="small" style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:var(--ink)"><span style="color:var(--b2)">${ic("check", 17)}</span>${x}</div>`).join("")}</div>
     </div>
-    <div style="flex:1"><h4 class="fh" style="color:var(--navy);margin-bottom:10px">Dónde aplica: dentro y fuera de las instalaciones</h4>
-      <div class="g2">${[["building", "Sedes y lugares de trabajo", "Incluidos los espacios públicos o privados cuando son lugar de trabajo."], ["pin", "Desplazamientos y eventos", "Viajes, comisiones, visitas, actividades sociales y de formación."], ["home", "Espacios de descanso", "Cafetería, baños y vestuarios."], ["msg", "Espacios digitales", "Correo, chats, redes y reuniones virtuales del trabajo."]]
-        .map(([i, t, d]) => `<div class="tile"><div class="icobox">${ic(i)}</div><div><h4>${t}</h4><p>${d}</p></div></div>`).join("")}</div>
-      <div class="note mt16">${ic("info", 20)}<span>Un <b>desacuerdo sobre el trabajo</b>, tratado con respeto, no es por sí solo una conducta prohibida: se resuelve en la gestión de la actuación profesional.</span></div>
+    <div style="flex:1.1"><h4 class="fh" style="color:var(--navy);margin-bottom:8px;font-size:15px">Dónde aplica: dentro y fuera de las sedes</h4>
+      <div class="g2" style="gap:8px">${[["building", "Sedes y lugares de trabajo"], ["pin", "Viajes, comisiones, visitas y eventos"], ["home", "Cafetería, baños y vestuarios"], ["msg", "Correo, chats, redes y reuniones virtuales"]]
+        .map(([i, t]) => `<div class="tile" style="padding:9px 12px;align-items:center;font-size:13.5px"><div class="icobox" style="width:34px;height:34px;border-radius:10px">${ic(i, 18)}</div><span>${t}</span></div>`).join("")}</div>
     </div>
   </div></div>`);
-add("m1-tarjetas", momKicker(1) + " · Tarjetas", 1, () => `<div class="pg">${head(1, momKicker(1) + " · Tarjetas", "Términos clave para entender el protocolo")}<div class="grow mt8" id="dk-m1"></div></div>`, el => deck($("#dk-m1", el), "m1-tarjetas", CARDS_M1));
+add("m1-tarjetas", momKicker(1) + " · Tarjetas", 1, () => `<div class="pg">${head(1, momKicker(1) + " · Tarjetas", "Las definiciones del protocolo")}<div class="grow mt8" id="dk-m1"></div></div>`, el => deck($("#dk-m1", el), "m1-tarjetas", CARDS_M1));
 add("m1-reto", momKicker(1) + " · Reto", 1, () => `<div class="pg">${head(1, momKicker(1) + " · Reto", "¿Verdadero o falso?")}<div class="grow mt8 col" id="qz-m1"></div></div>`, el => quiz($("#qz-m1", el), "m1-reto", QUIZ_M1, { cierre: "Recuerda: el protocolo cobija a toda la Comunidad Invima, dentro y fuera de las instalaciones, también en los espacios digitales." }));
 
 /* M2 */
@@ -485,32 +524,46 @@ add("m5-acciones", momKicker(5) + " · Mis acciones", 5, () => `<div class="pg">
 add("m5-frases", momKicker(5) + " · Completa la frase", 5, () => `<div class="pg">${head(5, momKicker(5) + " · Reto", "Completa las frases de la campaña")}<div class="grow mt8 col" id="fl-m5"></div></div>`, el => fill($("#fl-m5", el), "m5-frases", FILL_M5, 9));
 add("reto-final", "Reto final", 5, () => `<div class="pg">${head(5, "Reto final", "Pon a prueba todo lo que aprendiste")}<div class="grow mt8 col" id="qz-fin"></div></div>`, el => quiz($("#qz-fin", el), "final", QUIZ_FINAL, { cierre: "Gracias por llegar hasta aquí. Lo que se nombra, se detiene." }));
 
+/* CUÉNTANOS */
+add("cuentanos", "Cuéntanos", 0, () => `<div class="pg">
+  <div class="kicker">Cuéntanos · anónimo</div><h2 class="h2">¿Cómo te fue con la cartilla?</h2>
+  <p class="lead" style="font-size:16.5px">Tu opinión nos ayuda a mejorar. Elige un número del 1 al 5.</p>
+  <div class="row mt24 cuent" style="gap:30px;flex:1;align-items:flex-start">
+    <div class="col" style="flex:1;gap:18px">
+      ${[["util", "¿Qué tan útil te pareció esta cartilla?"], ["claridad", "Del 1 al 5, ¿consideras que aprendiste o que ahora tienes mayor claridad sobre el protocolo?"]].map(([k, q]) => `<div class="card lk-card">
+        <div class="fh" style="font-weight:600;font-size:18px;color:var(--navy);line-height:1.35">${q}</div>
+        <div class="likert mt16" data-q="${k}">${[1, 2, 3, 4, 5].map(n => `<button data-n="${n}" aria-pressed="false" aria-label="${n} de 5">${n}</button>`).join("")}</div>
+        <div class="lkscale"><span>1 · Nada</span><span>5 · Mucho</span></div>
+        <div class="lkmsg small" aria-live="polite"></div></div>`).join("")}
+      <div class="thanks fh" aria-live="polite"></div>
+    </div>
+    <div class="cuent-pj"><img src="${PJ.p5.img}" alt="Arturo, coordinador de grupo"></div>
+  </div></div>`, el => {
+  $$(".likert", el).forEach(g => $$("button", g).forEach(b => b.onclick = () => { const v = Object.assign({}, S.val, { [g.dataset.q]: +b.dataset.n }); Track.set("val", v); paintLikert(el); }));
+});
+
 /* CIERRE */
 add("cierre", "Cierre", 0, () => `<div class="pg">
-  <div class="row" style="gap:40px;flex:1">
-    <div style="flex:1" class="col">
-      <span class="stamp" style="font-size:20px;align-self:flex-start">NO ES NORMAL</span>
-      <h1 class="fh" style="font-size:52px;font-weight:800;line-height:1.02;margin-top:22px">Lo que se nombra,<br><span style="color:var(--aqua)">se detiene.</span></h1>
-      <p style="font-size:17px;line-height:1.5;opacity:.92;margin-top:16px;max-width:520px">El INVIMA vigila la calidad de lo que consume el país. Hoy también cuidamos cómo nos tratamos: dentro del Instituto y con la ciudadanía.</p>
-      <div class="row mt24" style="gap:12px"><div style="background:rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;flex:1"><b class="fh">Si lo ves, nómbralo.</b><div style="font-size:13px;opacity:.85">convivencia@invima.gov.co</div></div><div style="background:rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;flex:1"><b class="fh">Si lo vives, no estás solo/a.</b><div style="font-size:13px;opacity:.85">Línea Púrpura 018000 112137</div></div></div>
-      <div class="mt24" style="background:#fff;border-radius:14px;padding:10px 16px;align-self:flex-start"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr" style="height:52px;display:block"></div>
+  <div class="row cierre-row" style="gap:40px;flex:1">
+    <div style="flex:1.05" class="col">
+      <div class="row" style="align-items:center;gap:16px"><span class="stamp" style="font-size:22px">NO ES NORMAL</span><span class="sello-big"><span class="chk">${ic("check", 20, 3.4)}</span>INVIMA <span>CONSCIENTE</span></span></div>
+      <h1 class="fh" style="font-size:54px;font-weight:800;line-height:1.02;margin-top:24px">Lo que se nombra,<br><span style="color:var(--aqua)">se detiene.</span></h1>
+      <p style="font-size:16.5px;line-height:1.5;opacity:.92;margin-top:14px;max-width:520px">El INVIMA vigila la calidad de lo que consume el país. Hoy también cuidamos cómo nos tratamos: dentro del Instituto y con la ciudadanía.</p>
+      <div class="protocolo mt24"><div class="icobox" style="background:var(--aqua);color:#0b2b4f">${ic("doc")}</div><div style="flex:1"><b class="fh">Consulta el protocolo completo</b><div style="font-size:13px;opacity:.85">Resolución 2026041802 de 2026 · PDF</div></div>
+        <a class="btn sm" style="background:#fff;color:var(--navy)" href="${PROTOCOLO}" target="_blank" rel="noopener">${ic("eye", 18)} Ver</a><a class="btn sm" style="background:rgba(255,255,255,.16);box-shadow:none" href="${PROTOCOLO}" download>${ic("right", 18)} Descargar</a></div>
+      <div class="mt24" style="background:#fff;border-radius:14px;padding:10px 16px;align-self:flex-start"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr" style="height:50px;display:block"></div>
     </div>
     <div style="flex:1" class="col">
       <h4 class="fh" style="font-size:15px;margin-bottom:10px">Tu recorrido</h4>
-      <div class="scorelist" id="scl"></div>
-      <h4 class="fh" style="font-size:15px;margin:20px 0 8px">Cuéntanos <span style="font-weight:400;opacity:.8">· anónimo</span></h4>
-      <div style="font-size:14px;margin-bottom:6px">¿Qué tan útil te pareció esta cartilla?</div><div class="likert" data-q="util">${[1, 2, 3, 4, 5].map(n => `<button data-n="${n}" style="background:rgba(255,255,255,.95)">${n}</button>`).join("")}</div>
-      <div style="font-size:14px;margin:12px 0 6px">¿Qué tan seguro/a te sentirías de buscar orientación si la necesitaras?</div><div class="likert" data-q="seguro">${[1, 2, 3, 4, 5].map(n => `<button data-n="${n}" style="background:rgba(255,255,255,.95)">${n}</button>`).join("")}</div>
-      <div style="font-size:12px;opacity:.75;margin-top:6px">1 = nada · 5 = mucho</div>
+      <div id="recorrido"></div>
+      <div class="cierre-pj" aria-hidden="true">${["p3", "p1", "p2", "p4", "p5"].map(id => `<img src="${PJ[id].img}" alt="" class="${PJ[id].escena ? "scene" : ""}">`).join("")}</div>
     </div>
   </div>
-  <p style="position:absolute;left:72px;bottom:16px;font-size:11.5px;opacity:.6">Estrategia de divulgación y apropiación del Protocolo INVIMA CONSCIENTE (Res. 2026041802 de 2026). Contenidos sujetos a validación institucional.</p>
-</div>`, el => {
-  $$(".likert", el).forEach(g => $$("button", g).forEach(b => b.onclick = () => { const v = Object.assign({}, S.val, { [g.dataset.q]: +b.dataset.n }); Track.set("val", v); paintLikert(el); toast("¡Gracias por tu respuesta!"); }));
-}, "closing");
+  <p class="foot-note">Estrategia de divulgación y apropiación del Protocolo INVIMA CONSCIENTE. Contenidos sujetos a validación institucional.</p>
+</div>`, null, "closing");
 
 /* PANEL (solo editores) */
-add("panel", "Panel de seguimiento", 0, () => `<div class="pg" style="padding:36px 44px 30px">
+add("panel", "Panel de seguimiento", 0, () => `<div class="pg" style="padding:72px 44px 30px">
   <div class="row" style="justify-content:space-between;align-items:center"><div><div class="kicker">Solo para el equipo de la estrategia</div><h2 class="h2" style="margin:6px 0 0">Panel de seguimiento</h2></div>
   <div class="row" style="gap:8px"><button class="btn alt sm" id="pn-copy">${ic("copy", 18)} Copiar datos (CSV)</button><button class="btn sm" id="pn-ref">${ic("flip", 18)} Actualizar</button></div></div>
   <div id="pn" class="col grow"><p class="small mt24">Cargando datos…</p></div>
@@ -518,7 +571,8 @@ add("panel", "Panel de seguimiento", 0, () => `<div class="pg" style="padding:36
 
 /* ---------------- RENDER & NAV ---------------- */
 const stage = $("#stage");
-stage.innerHTML = P.map((p, k) => `<section class="page ${p.cls} ${p.m && p.cls === "mintro" ? "" : ""}" id="pg-${p.id}" data-k="${k}" aria-label="${esc(p.sec)}" ${p.m ? `style="--mc:${MOM[p.m].color};--mink:${MOM[p.m].ink}"` : ""}>${p.html()}<span class="pnum">${k + 1}</span></section>`).join("");
+const LOGO = `<img class="corner-logo" src="img/logos.webp" alt="Ministerio de Salud · Invima · efr">`;
+stage.innerHTML = P.map((p, k) => `<section class="page ${p.cls}" id="pg-${p.id}" data-k="${k}" aria-label="${esc(p.sec)}" ${p.m ? `style="--mc:${MOM[p.m].color};--mink:${MOM[p.m].ink}"` : ""}>${p.html()}${p.cls === "cover" || p.cls === "mintro" || p.cls === "closing" ? "" : LOGO}<span class="pnum">${k + 1}</span></section>`).join("");
 P.forEach((p, k) => { const el = stage.children[k]; if (p.after) { try { p.after(el); } catch (e) { console.error(p.id, e); } } });
 // la página del panel queda fuera del recorrido normal
 const PANEL_K = P.findIndex(p => p.id === "panel");
@@ -542,6 +596,7 @@ function go(k, from) {
   if (location.hash.slice(1) !== p.id) { try { history.replaceState(null, "", "#" + p.id); } catch (e) { location.hash = p.id; } }
   Track.page(p.id); refreshProgress();
   if (p.id === "cierre") paintScores();
+  if (p.id === "cuentanos") paintLikert($("#pg-cuentanos"));
   if (p.id === "panel") loadPanel();
   $$(".toc a").forEach(a => a.classList.toggle("on", a.dataset.k == k));
   if (document.body.classList.contains("mob")) window.scrollTo(0, 0);
@@ -593,15 +648,24 @@ function refreshProgress() {
   });
 }
 function paintScores() {
-  const el = $("#scl"); if (!el) return;
-  el.innerHTML = ACTS.map(a => { const r = S.acts[a.id]; return `<div class="srow"><span class="mdot" style="width:9px;height:9px;border-radius:50%;background:${MOM[a.m].color};flex:none"></span><span>${esc(a.n)}</span><span class="s ${r && r.s !== undefined ? "" : "no"}">${r && r.s !== undefined ? `${r.s}/${r.t}` : "pendiente"}</span></div>`; }).join("");
-  paintLikert($("#pg-cierre"));
+  const el = $("#recorrido"); if (!el) return;
+  const done = ACTS.filter(a => S.acts[a.id] && S.acts[a.id].s !== undefined).length;
+  el.innerHTML = `<div class="rec-top"><div class="ring sm">${ring(done / ACTS.length, "#00D4C6")}<div class="v"><div>${done}/${ACTS.length}<small>actividades</small></div></div></div>
+    <div class="rec-mom">${MOMENTOS.map(m => { const acts = ACTS.filter(a => a.m === m.n); let s = 0, t = 0, d = 0; acts.forEach(a => { const r = S.acts[a.id]; if (r && r.s !== undefined) { s += r.s; t += r.t; d++; } });
+      return `<div class="rm"><span class="n" style="background:${m.color};color:${m.ink}">${m.n}</span><span class="t">${esc(m.titulo)}</span><span class="b"><i style="width:${t ? Math.round(s / t * 100) : 0}%"></i></span><span class="p">${d ? Math.round(s / t * 100) + "%" : "—"}</span></div>`; }).join("")}</div></div>
+    <div class="small" style="color:#cfe6f5;margin-top:8px">Porcentaje de aciertos por momento. Puedes volver a cualquier actividad desde «Contenido».</div>`;
 }
-function paintLikert(el) { $$(".likert", el).forEach(g => $$("button", g).forEach(b => b.classList.toggle("on", (S.val || {})[g.dataset.q] === +b.dataset.n))); }
+function paintLikert(el) {
+  if (!el) return;
+  $$(".likert", el).forEach(g => { const v = (S.val || {})[g.dataset.q];
+    $$("button", g).forEach(b => { const on = v === +b.dataset.n; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = on ? `${ic("check", 16, 3)}<span>${b.dataset.n}</span>` : b.dataset.n; });
+    const msg = g.parentNode.querySelector(".lkmsg"); if (msg) msg.textContent = v ? `Elegiste ${v} de 5. Puedes cambiarlo si quieres.` : ""; });
+  const th = $(".thanks", el); if (th) th.textContent = (S.val && S.val.util && S.val.claridad) ? "¡Gracias por contarnos! 💚" : "";
+}
 function hydrateAll() {
   refreshProgress();
   // re-sincroniza vistas que dependen del estado guardado
-  const b = $("#pg-bienvenida"); if (b) $$(".vchips button", b).forEach(x => x.classList.toggle("on", S.vinc === x.dataset.v));
+  paintLikert($("#pg-cuentanos"));
   const a = $("#pg-m5-acciones"); if (a) { $$(".check", a).forEach(x => x.classList.toggle("on", (S.acciones || []).includes(+x.dataset.k))); $$("textarea", a).forEach(t => { if (!t.value) t.value = (S.mural || {})[t.dataset.k] || ""; }); }
   if (P[cur] && P[cur].id === "cierre") paintScores();
 }
@@ -631,9 +695,8 @@ function renderPanel(D) {
     const qn = fs[0] ? fs[0].t : 0; const qs = []; for (let i = 0; i < qn; i++) { const v = fs.map(f => f.ans && f.ans[i]).filter(x => x === 0 || x === 1); qs.push(v.length ? v.filter(x => x === 1).length / v.length : null); }
     return { a, n: fs.length, pct: t ? Math.round(s / t * 100) : null, qs }; });
   const reach = MOMENTOS.map(m => ({ m, n: D.filter(d => d.seen && d.seen[m.id]).length }));
-  const vinc = {}; D.forEach(d => { const v = d.vinc || "Sin respuesta"; vinc[v] = (vinc[v] || 0) + 1; });
   const avgVal = k => { const v = D.map(d => d.val && d.val[k]).filter(Boolean); return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : "—"; };
-  const nval = D.filter(d => d.val && (d.val.util || d.val.seguro)).length;
+  const nval = D.filter(d => d.val && (d.val.util || d.val.claridad)).length;
   const murals = D.map(d => d.mural || {}).filter(m => m.a || m.b || m.c);
   const accCount = ACCIONES.map((a, k) => D.filter(d => (d.acciones || []).includes(k)).length);
   const pctOf = n => N ? Math.round(n / N * 100) : 0;
@@ -656,9 +719,8 @@ function renderPanel(D) {
         ${reach.map(r => `<div class="qbars"><div class="qb"><span style="width:120px">${r.m.n} · ${esc(r.m.titulo)}</span><span class="bar"><i style="width:${pctOf(r.n)}%;background:${r.m.color}"></i></span><b style="width:60px;text-align:right">${r.n} (${pctOf(r.n)}%)</b></div></div>`).join("")}
         <div class="small mt8">Reproducciones: ${vidKeys.map(k => `${k === "personajes" ? "Personajes" : k.toUpperCase()}: <b>${D.filter(d => d.vids && d.vids[k]).length}</b>`).join(" · ")}</div>
       </div>
-      <div class="pbox" style="flex:none"><h4>${ic("users", 18)} Contexto y valoración</h4>
-        <div class="small">${Object.entries(vinc).map(([k, v]) => `${esc(k)}: <b>${v}</b>`).join(" · ")}</div>
-        <div class="small mt8">Utilidad: <b>${avgVal("util")}</b>/5 · Seguridad para buscar orientación: <b>${avgVal("seguro")}</b>/5 · (${nval} respuestas)</div>
+      <div class="pbox" style="flex:none"><h4>${ic("users", 18)} Valoración</h4>
+        <div class="small">Utilidad: <b>${avgVal("util")}</b>/5 · Aprendizaje o claridad: <b>${avgVal("claridad")}</b>/5 · (${nval} respuestas)</div>
         <div class="small mt8">Compromisos más elegidos: ${ACCIONES.map((a, k) => ({ t: a.t, n: accCount[k] })).sort((x, y) => y.n - x.n).slice(0, 4).map(x => `${esc(x.t)} <b>${x.n}</b>`).join(" · ")}</div>
       </div>
       <div class="pbox" style="flex:1"><h4>${ic("pen", 18)} Mural digital (${murals.length}) <span class="small" style="font-weight:400">· revisar antes de publicar</span></h4>
@@ -668,8 +730,8 @@ function renderPanel(D) {
   </div>`;
 }
 function copyCSV() {
-  const head = ["visitas", "vinculo", "util", "seguro", ...ACTS.map(a => a.id), "acciones", "mural_normalizar", "mural_haria", "mural_equipo"];
-  const rows = PDATA.map(d => [d.visits || 0, d.vinc || "", (d.val || {}).util || "", (d.val || {}).seguro || "", ...ACTS.map(a => { const f = d.acts && d.acts[a.id] && d.acts[a.id].f; return f ? `${f.s}/${f.t}` : ""; }), (d.acciones || []).map(k => ACCIONES[k] && ACCIONES[k].t).join(" | "), (d.mural || {}).a || "", (d.mural || {}).b || "", (d.mural || {}).c || ""]);
+  const head = ["visitas", "util", "claridad", ...ACTS.map(a => a.id), "acciones", "mural_normalizar", "mural_haria", "mural_equipo"];
+  const rows = PDATA.map(d => [d.visits || 0, (d.val || {}).util || "", (d.val || {}).claridad || "", ...ACTS.map(a => { const f = d.acts && d.acts[a.id] && d.acts[a.id].f; return f ? `${f.s}/${f.t}` : ""; }), (d.acciones || []).map(k => ACCIONES[k] && ACCIONES[k].t).join(" | "), (d.mural || {}).a || "", (d.mural || {}).b || "", (d.mural || {}).c || ""]);
   const csv = [head, ...rows].map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\n");
   navigator.clipboard.writeText(csv).then(() => toast("Datos copiados. Pégalos en una hoja de cálculo."), () => toast("No se pudo copiar en esta vista."));
 }
