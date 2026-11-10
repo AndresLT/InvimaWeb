@@ -21,7 +21,7 @@ window.VIDEOS = {
    Los nombres los elige la comunidad Invima. Cuando estén, cambiar "nombre". */
 window.PERSONAJES = [
   { id: "p3", img: "img/p3.webp", nombre: "Gerardo", perfil: "Ingeniero de alimentos · paso fronterizo de Cúcuta", rol: "Trabaja en territorio, en un paso fronterizo. Te presenta el protocolo: qué es, a quién cobija y dónde aplica, también fuera de la sede.", momento: 1 },
-  { id: "p1", img: "img/p1.webp", nombre: null, perfil: "Apoyo administrativo · Secretaría General, sede Chapinero (Bogotá)", rol: "Trabaja en el área administrativa de la sede de Chapinero. Te ayuda a reconocer las situaciones que se han vuelto «normales» y no deberían serlo.", momento: 2, escena: true },
+  { id: "p1", img: "img/p1.webp", nombre: "Sandra", perfil: "Apoyo administrativo · Secretaría General, sede Chapinero (Bogotá)", rol: "Trabaja en el área administrativa de la sede de Chapinero. Te ayuda a reconocer las situaciones que se han vuelto «normales» y no deberían serlo.", momento: 2, escena: true },
   { id: "p2", img: "img/p2.webp", nombre: "Julio", perfil: "Contratista", rol: "Recuerda que el protocolo también cobija el ámbito contractual. Te muestra qué hacer y a qué instancia acudir si lo vives o lo ves.", momento: 3 },
   { id: "p4", img: "img/p4.webp", nombre: "Catalina", perfil: "Oficina de Atención al Ciudadano", rol: "Atiende a la ciudadanía todos los días. Te cuenta tus derechos, las garantías y las medidas que te protegen si decides hablar.", momento: 4 },
   { id: "p5", img: "img/p5.webp", nombre: "Arturo", perfil: "Coordinador de grupo", rol: "Lidera un equipo y usa audífono. Te invita a llevar lo aprendido a la práctica, con acciones cotidianas de respeto y cuidado.", momento: 5 }
@@ -38,7 +38,7 @@ window.MOMENTOS = [
 /* ---------- INTRO DE CADA VIDEO ---------- */
 window.VIDEO_INTROS = {
   personajes: {
-    contexto: "Gerardo, Julio, Catalina, Arturo y su compañera de la Secretaría General te acompañarán en toda la campaña: en los videos, los casos, las piezas gráficas y los dummies de las zonas comunes.",
+    contexto: "Gerardo, Sandra, Julio, Catalina y Arturo te acompañarán en toda la campaña: en los videos, los casos, las piezas gráficas y los dummies de las zonas comunes.",
     busca: "Que los conozcas antes de empezar. No son víctimas ni agresores: son guías que hacen preguntas e invitan a reflexionar.",
     fijate: ["¿En qué contexto trabaja cada uno?", "¿Con cuál te identificas más?"]
   },

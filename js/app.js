@@ -196,7 +196,7 @@ function quiz(el, id, items, opt = {}) {
   render();
 }
 function scrollTopMob(el) { if (document.body.classList.contains("mob")) { const pg = el.closest(".page"); pg && pg.scrollIntoView({ block: "start" }); } }
-function pjLabel(id) { const p = PJ[id]; return `<b>${p.nombre ? esc(p.nombre) : "Secretaría General"}</b>${esc(p.perfil.split(" · ")[0])}`; }
+function pjLabel(id) { const p = PJ[id]; return `<b>${p.nombre ? esc(p.nombre) : ""}</b>${esc(p.perfil.split(" · ")[0])}`; }
 
 /* ---------------- FLASHCARDS ---------------- */
 function deck(el, id, cards) {
@@ -328,14 +328,14 @@ add("portada", "Inicio", 0, () => `<div class="pg" style="padding:0">
   <div class="blob" style="width:520px;height:520px;left:-160px;bottom:-260px;background:radial-gradient(circle,rgba(0,212,198,.35),transparent 70%)"></div>
   <div class="blob" style="width:700px;height:700px;right:-200px;top:-300px;background:radial-gradient(circle,rgba(60,147,250,.35),transparent 70%)"></div>
   <div class="logos"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr"></div>
-  <div class="col abs-m" style="position:absolute;left:72px;top:190px;width:640px">
+  <div class="col abs-m" style="position:absolute;left:72px;top:176px;width:570px">
     <span class="stamp" style="font-size:22px;align-self:flex-start;margin-bottom:26px">NO ES NORMAL</span>
     <h1><small>Cartilla interactiva</small>INVIMA<br>CONSCIENTE</h1>
     <p class="slogan" style="font-size:26px;margin-top:22px">Lo que se nombra, se detiene.</p>
     <p style="font-size:16px;opacity:.85;margin-top:12px;max-width:520px;line-height:1.5">Conoce el protocolo, reconoce lo que no es normal, aprende qué hacer y descubre lo que te protege.</p>
     <div class="row mt32" style="gap:12px"><button class="btn" style="background:#fff;color:var(--navy)" data-go="1">Comenzar ${ic("right", 18)}</button><button class="btn" style="background:rgba(255,255,255,.14);box-shadow:none" data-toc>${ic("menu", 18)} Ver contenido</button></div>
   </div>
-  <div class="people abs-m" aria-hidden="true">${["p4", "p3", "p5"].map((id, k) => `<img src="${PJ[id].img}" alt="" class="${k === 1 ? "" : "s"}">`).join("")}</div>
+  <div class="people abs-m" aria-hidden="true">${["p4", "p3", "p5"].map((id, k) => `<img src="${PJ[id].img}" alt="" >`).join("")}</div>
 </div>`, null, "cover");
 
 /* BIENVENIDA */
