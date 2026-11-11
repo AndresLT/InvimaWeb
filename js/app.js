@@ -53,6 +53,7 @@ const brandDots = () => `<div class="brand-dots" aria-hidden="true">${["#004C94"
 /* ---------------- TRACKING (anónimo) ---------------- */
 const LS = "invima-consciente-v1";
 const PROTOCOLO = "docs/protocolo-invima-consciente.pdf";
+const LIK = ["Nada", "Poco", "Algo", "Bastante", "Mucho"];
 const blank = () => ({ v: 1, visits: 0, first: null, last: null, seen: {}, vids: {}, acts: {}, val: {}, mural: {}, acciones: [] });
 let S = blank();
 try { const raw = localStorage.getItem(LS); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
@@ -327,9 +328,9 @@ const add = (id, sec, m, html, after, cls = "") => P.push({ id, sec, m, html, af
 add("portada", "Inicio", 0, () => `<div class="pg" style="padding:0">
   <div class="blob" style="width:520px;height:520px;left:-160px;bottom:-260px;background:radial-gradient(circle,rgba(0,212,198,.35),transparent 70%)"></div>
   <div class="blob" style="width:700px;height:700px;right:-200px;top:-300px;background:radial-gradient(circle,rgba(60,147,250,.35),transparent 70%)"></div>
-  <div class="logos"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr"></div>
-  <div class="col abs-m" style="position:absolute;left:72px;top:176px;width:570px">
-    <span class="stamp" style="font-size:22px;align-self:flex-start;margin-bottom:26px">NO ES NORMAL</span>
+  <span class="stamp cover-stamp abs-m">NO ES NORMAL</span>
+  <div class="logos abs-m"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr"></div>
+  <div class="col abs-m cover-col">
     <h1><small>Cartilla interactiva</small>INVIMA<br>CONSCIENTE</h1>
     <p class="slogan" style="font-size:26px;margin-top:22px">Lo que se nombra, se detiene.</p>
     <p style="font-size:16px;opacity:.85;margin-top:12px;max-width:520px;line-height:1.5">Conoce el protocolo, reconoce lo que no es normal, aprende qué hacer y descubre lo que te protege.</p>
@@ -381,8 +382,8 @@ add("no-es-normal", "Campaña NO ES NORMAL", 0, () => `<div class="pg">
   <p class="fh mt16" style="font-weight:600;color:var(--navy);font-size:15px">Toca cada frase y mira lo que hay detrás:</p>
   <div class="g3 mt8">${FRASES.map((f, k) => `<button class="frase" data-k="${k}"><div class="f">«${esc(f.f)}»</div><div class="r">${esc(f.r)}</div><span class="stamp">NO ES NORMAL</span><span class="tap">Toca ✦</span></button>`).join("")}</div>
   <div class="row mt16" style="gap:14px">
-    <div class="card" style="flex:1;padding:14px 18px;display:flex;gap:14px;align-items:center"><div class="icobox">${ic("megaphone")}</div><div><b class="fh" style="color:var(--navy)">Si lo ves, nómbralo.</b><div class="small">Llévalo a las instancias del protocolo, sin exponerlo ni difundirlo.</div></div></div>
-    <div class="card" style="flex:1;padding:14px 18px;display:flex;gap:14px;align-items:center"><div class="icobox" style="background:var(--mint);color:var(--t2)">${ic("heart")}</div><div><b class="fh" style="color:var(--navy)">Si lo vives, no estás solo/a.</b><div class="small">Hay orientación, acompañamiento y garantías cuando decidas buscarlas.</div></div></div>
+    <div class="callout" style="background:linear-gradient(120deg,#004C94,#006ECF)"><div class="icobox">${ic("megaphone")}</div><div><b class="fh">Si lo ves, nómbralo.</b><div>Llévalo a las instancias del protocolo, sin exponerlo ni difundirlo.</div></div></div>
+    <div class="callout" style="background:linear-gradient(120deg,#028183,#0FA69D)"><div class="icobox">${ic("heart")}</div><div><b class="fh">Si lo vives, no estás solo/a.</b><div>Hay orientación, acompañamiento y garantías cuando decidas buscarlas.</div></div></div>
   </div></div>`, el => { $$(".frase", el).forEach(b => b.onclick = () => b.classList.toggle("on")); });
 
 /* CREACIÓN DEL MATERIAL */
@@ -391,7 +392,7 @@ add("como-se-creo", "Cómo se creó este material", 0, () => `<div class="pg">
   <div class="row mt8" style="gap:36px">
     <div style="flex:1">
       <p class="lead" style="font-size:16.5px">Partimos de una encuesta de diagnóstico a la comunidad Invima: cuánto se conocía el protocolo y cómo preferían que se divulgara. Las opciones más votadas definieron los formatos:</p>
-      <div class="vchips mt16">${["Charlas con diapositivas", "Videos cortos", "Casos prácticos", "Piezas gráficas", "Dummies y QR"].map(x => `<span class="chip">${ic("check", 16)} ${x}</span>`).join("")}</div>
+      <div class="vchips mt16">${["Charlas con diapositivas", "Videos cortos", "Casos prácticos", "Piezas gráficas", "Dummies y QR"].map((x, k) => `<span class="chip win" style="background:${["#004C94", "#006ECF", "#0FA69D", "#028183", "#3C93FA"][k]}">${ic("star", 16)} ${x}</span>`).join("")}</div>
       <p class="lead mt24" style="font-size:16.5px">El protocolo es un documento extenso. Aquí lo convertimos en lo esencial: qué es, cómo reconocer una situación, qué hacer y qué te protege.</p>
       <div class="note mt24">${ic("info", 20)}<span>Los casos de esta cartilla son <b>hipotéticos</b> y tienen finalidad pedagógica. Las rutas se presentan conforme al texto oficial del protocolo.</span></div>
     </div>
@@ -417,7 +418,7 @@ add("la-ruta", "La ruta de los cinco momentos", 0, () => `<div class="pg">
   <div class="kicker">Tu recorrido</div><h2 class="h2">De conocer a <span class="grad">hacerlo parte de ti</span></h2>
   <p class="lead" style="font-size:16.5px">La campaña avanza en cinco momentos. Cada uno responde a una pregunta y tiene su video, su contenido y sus actividades. Toca un momento para ir directo.</p>
   <div class="road">${MOMENTOS.map(m => `<button class="stop" data-goto="${m.id}"><span class="c" style="background:${m.color};color:${m.ink}">${m.n}</span><h4>${esc(m.titulo)}</h4><span class="p">${esc(m.pregunta)}</span><span class="st" data-mprog="${m.n}">0% completado</span><span class="bar"><i data-mbar="${m.n}" style="width:0;background:${m.color}"></i></span></button>`).join("")}</div>
-  <p class="small mt24" style="text-align:center">ME ENTERO → LO RECONOZCO → SÉ QUÉ HACER → SÉ QUE ESTOY PROTEGIDO/A → LO HAGO PARTE DE MÍ</p>
+  <div class="ruta-foot"><div class="brand-dots-lg">${brandDots()}</div><p>ME ENTERO → LO RECONOZCO → SÉ QUÉ HACER → SÉ QUE ESTOY PROTEGIDO/A → LO HAGO PARTE DE MÍ</p></div>
 </div>`);
 
 /* ---------- MOMENTOS ---------- */
@@ -480,7 +481,7 @@ add("ruta-en-una-pagina", momKicker(3) + " · La ruta en una página", 3, () => 
   <div class="small" style="max-width:420px;text-align:right">Quien vive la situación, quien la presencia o quien recibe un relato puede acudir a estas instancias.</div></div>
   <div class="tabs" role="tablist">${Object.entries(RUTAS).map(([k, r], i) => `<button class="tab ${i ? "" : "on"}" data-t="${k}" role="tab">${esc(r.tab)}</button>`).join("")}</div>
   <div id="rt" class="grow" style="margin-top:6px"></div>
-  <h4 class="fh" style="color:var(--navy);font-size:14px;margin:10px 0 8px">Canales y líneas de apoyo</h4>
+  <h4 class="fh lines-h">${ic("phone", 16)} Canales y líneas de apoyo</h4>
   <div class="lines">${LINEAS.map(l => `<div class="line"><b>${esc(l.n)}</b>${esc(l.v)}</div>`).join("")}</div>
 </div>`, el => {
   const show = k => { const r = RUTAS[k]; $("#rt", el).innerHTML = `<p class="small" style="font-size:14.5px;margin-top:6px">${esc(r.intro)}</p><div class="flow">${r.pasos.map((p, i) => `<div class="fstep" style="animation-delay:${i * 70}ms"><div class="n">${i + 1}</div><h4>${esc(p.t)}</h4>${esc(p.d)}</div>`).join("")}</div>`; };
@@ -512,10 +513,10 @@ add("m5", momKicker(5), 5, introPage(5), null, "mintro");
 add("m5-video", momKicker(5) + " · Video", 5, () => videoPage("v5", 5));
 add("m5-acciones", momKicker(5) + " · Mis acciones", 5, () => `<div class="pg">
   ${head(5, momKicker(5), "Pequeñas acciones, gran cultura", "Elige las acciones con las que te comprometes desde hoy. Puedes marcar todas las que quieras.")}
-  <div class="g4 mt16" style="gap:10px">${ACCIONES.map((a, k) => `<button class="check ${(S.acciones || []).includes(k) ? "on" : ""}" data-k="${k}"><span class="bx">${ic("check", 16, 3)}</span><span><b>${esc(a.t)}</b><br><span class="small">${esc(a.d)}</span></span></button>`).join("")}</div>
+  <div class="acc mt16">${ACCIONES.map((a, k) => `<button class="check ${(S.acciones || []).includes(k) ? "on" : ""}" data-k="${k}"><span class="bx">${ic("check", 16, 3)}</span><span><b>${esc(a.t)}</b><br><span class="small">${esc(a.d)}</span></span></button>`).join("")}</div>
   <h4 class="fh mt24" style="color:var(--navy);font-size:15.5px">Mural digital colectivo <span class="small" style="font-weight:400">· anónimo y moderado</span></h4>
   <p class="small" style="margin:4px 0 10px">Para cuidar la confidencialidad, no escribas nombres de personas ni situaciones reales identificables.</p>
-  <div class="mural">${[["a", "Algo que ya no voy a normalizar"], ["b", "Lo que haría si lo veo o lo vivo"], ["c", "Un compromiso de mi equipo"]].map(([k, t]) => `<label>${t}<textarea data-k="${k}" maxlength="280" placeholder="Escribe aquí…">${esc((S.mural || {})[k] || "")}</textarea></label>`).join("")}</div>
+  <div class="mural">${[["a", "Algo que ya no voy a normalizar", "#006ECF", "stop"], ["b", "Lo que haría si lo veo o lo vivo", "#0FA69D", "route"], ["c", "Un compromiso de mi equipo", "#73CC80", "users"]].map(([k, t, c, i]) => `<label style="--lc:${c}"><span class="mt-t">${ic(i, 18)} ${t}</span><textarea data-k="${k}" maxlength="280" placeholder="Escribe aquí…">${esc((S.mural || {})[k] || "")}</textarea></label>`).join("")}</div>
   <div class="qfoot"><span class="small saved" style="margin-right:auto;align-self:center"></span><button class="btn mc sm sv">${ic("check", 18)} Guardar mi aporte</button></div>
 </div>`, el => {
   $$(".check", el).forEach(b => b.onclick = () => { const k = +b.dataset.k; let a = (S.acciones || []).slice(); a = a.includes(k) ? a.filter(x => x !== k) : a.concat(k); Track.set("acciones", a); b.classList.toggle("on"); });
@@ -532,12 +533,11 @@ add("cuentanos", "Cuéntanos", 0, () => `<div class="pg">
     <div class="col" style="flex:1;gap:18px">
       ${[["util", "¿Qué tan útil te pareció esta cartilla?"], ["claridad", "Del 1 al 5, ¿consideras que aprendiste o que ahora tienes mayor claridad sobre el protocolo?"]].map(([k, q]) => `<div class="card lk-card">
         <div class="fh" style="font-weight:600;font-size:18px;color:var(--navy);line-height:1.35">${q}</div>
-        <div class="likert mt16" data-q="${k}">${[1, 2, 3, 4, 5].map(n => `<button data-n="${n}" aria-pressed="false" aria-label="${n} de 5">${n}</button>`).join("")}</div>
-        <div class="lkscale"><span>1 · Nada</span><span>5 · Mucho</span></div>
+        <div class="likert mt16" data-q="${k}">${LIK.map((l, j) => `<div class="lk"><button data-n="${j + 1}" aria-pressed="false" aria-label="${j + 1}: ${l}">${j + 1}</button><span>${l}</span></div>`).join("")}</div>
         <div class="lkmsg small" aria-live="polite"></div></div>`).join("")}
       <div class="thanks fh" aria-live="polite"></div>
     </div>
-    <div class="cuent-pj"><img src="${PJ.p5.img}" alt="Arturo, coordinador de grupo"></div>
+    <div class="cuent-pj"><img src="${PJ.p5.img}" alt="Arturo, coordinador de grupo" style="transform:scaleX(-1)"></div>
   </div></div>`, el => {
   $$(".likert", el).forEach(g => $$("button", g).forEach(b => b.onclick = () => { const v = Object.assign({}, S.val, { [g.dataset.q]: +b.dataset.n }); Track.set("val", v); paintLikert(el); }));
 });
@@ -551,16 +551,29 @@ add("cierre", "Cierre", 0, () => `<div class="pg">
       <p style="font-size:16.5px;line-height:1.5;opacity:.92;margin-top:14px;max-width:520px">El INVIMA vigila la calidad de lo que consume el país. Hoy también cuidamos cómo nos tratamos: dentro del Instituto y con la ciudadanía.</p>
       <div class="protocolo mt24"><div class="icobox" style="background:var(--aqua);color:#0b2b4f">${ic("doc")}</div><div style="flex:1"><b class="fh">Consulta el protocolo completo</b><div style="font-size:13px;opacity:.85">Resolución 2026041802 de 2026 · PDF</div></div>
         <a class="btn sm" style="background:#fff;color:var(--navy)" href="${PROTOCOLO}" target="_blank" rel="noopener">${ic("eye", 18)} Ver</a><a class="btn sm" style="background:rgba(255,255,255,.16);box-shadow:none" href="${PROTOCOLO}" download>${ic("right", 18)} Descargar</a></div>
-      <div class="mt24" style="background:#fff;border-radius:14px;padding:10px 16px;align-self:flex-start"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr" style="height:50px;display:block"></div>
+      <div class="logo-wide mt16"><img src="img/logos.webp" alt="Ministerio de Salud · Invima · efr"></div>
     </div>
     <div style="flex:1" class="col">
       <h4 class="fh" style="font-size:15px;margin-bottom:10px">Tu recorrido</h4>
       <div id="recorrido"></div>
-      <div class="cierre-pj" aria-hidden="true">${["p3", "p1", "p2", "p4", "p5"].map(id => `<img src="${PJ[id].img}" alt="" class="${PJ[id].escena ? "scene" : ""}">`).join("")}</div>
+      <div class="cierre-pj">${ilustraDespedida()}</div>
     </div>
   </div>
   <p class="foot-note">Estrategia de divulgación y apropiación del Protocolo INVIMA CONSCIENTE. Contenidos sujetos a validación institucional.</p>
 </div>`, null, "closing");
+
+/* GRACIAS */
+add("gracias", "¡Gracias por participar!", 0, () => `<div class="pg">
+  <canvas class="confetti" aria-hidden="true"></canvas>
+  <div class="gr-in">
+    <div class="sello-big" style="justify-content:center"><span class="chk">${ic("check", 20, 3.4)}</span>INVIMA <span>CONSCIENTE</span></div>
+    <h1 class="gr-h">¡Gracias por<br>participar!</h1>
+    <p class="gr-p">Cada vez que nombras lo que no es normal, ayudas a detenerlo.</p>
+    <span class="stamp" style="font-size:24px;margin-top:22px">NO ES NORMAL</span>
+    <p class="slogan" style="font-size:24px;margin-top:16px">Lo que se nombra, se detiene.</p>
+    <div class="row" style="gap:12px;margin-top:28px;justify-content:center"><button class="btn" style="background:#fff;color:var(--navy)" data-go="0">${ic("flip", 18)} Volver al inicio</button><button class="btn" style="background:rgba(255,255,255,.16);box-shadow:none" data-confetti>${ic("star", 18)} ¡Más confeti!</button></div>
+  </div>
+</div>`, el => { $("[data-confetti]", el).onclick = () => confetti(el); }, "gracias-pg");
 
 /* PANEL (solo editores) */
 add("panel", "Panel de seguimiento", 0, () => `<div class="pg" style="padding:72px 44px 30px">
@@ -572,7 +585,7 @@ add("panel", "Panel de seguimiento", 0, () => `<div class="pg" style="padding:72
 /* ---------------- RENDER & NAV ---------------- */
 const stage = $("#stage");
 const LOGO = `<img class="corner-logo" src="img/logos.webp" alt="Ministerio de Salud · Invima · efr">`;
-stage.innerHTML = P.map((p, k) => `<section class="page ${p.cls}" id="pg-${p.id}" data-k="${k}" aria-label="${esc(p.sec)}" ${p.m ? `style="--mc:${MOM[p.m].color};--mink:${MOM[p.m].ink}"` : ""}>${p.html()}${p.cls === "cover" || p.cls === "mintro" || p.cls === "closing" ? "" : LOGO}<span class="pnum">${k + 1}</span></section>`).join("");
+stage.innerHTML = P.map((p, k) => `<section class="page ${p.cls}" id="pg-${p.id}" data-k="${k}" aria-label="${esc(p.sec)}" ${p.m ? `style="--mc:${MOM[p.m].color};--mink:${MOM[p.m].ink}"` : ""}>${p.html()}${["cover", "mintro", "closing", "gracias-pg"].includes(p.cls) ? "" : LOGO}<span class="pnum">${k + 1}</span></section>`).join("");
 P.forEach((p, k) => { const el = stage.children[k]; if (p.after) { try { p.after(el); } catch (e) { console.error(p.id, e); } } });
 // la página del panel queda fuera del recorrido normal
 const PANEL_K = P.findIndex(p => p.id === "panel");
@@ -597,6 +610,7 @@ function go(k, from) {
   Track.page(p.id); refreshProgress();
   if (p.id === "cierre") paintScores();
   if (p.id === "cuentanos") paintLikert($("#pg-cuentanos"));
+  if (p.id === "gracias") setTimeout(() => confetti(n), 350);
   if (p.id === "panel") loadPanel();
   $$(".toc a").forEach(a => a.classList.toggle("on", a.dataset.k == k));
   if (document.body.classList.contains("mob")) window.scrollTo(0, 0);
@@ -638,9 +652,8 @@ function addPanelToToc() { const b = $("#panelbtn"); b.style.display = ""; b.onc
 
 /* PROGRESS */
 function refreshProgress() {
-  const graded = ACTS.length, done = ACTS.filter(a => S.acts[a.id] && S.acts[a.id].f).length;
-  const seen = P.slice(0, LAST + 1).filter(p => S.seen[p.id]).length;
-  $("#prog i").style.width = Math.round((seen / (LAST + 1)) * 60 + (done / graded) * 40) + "%";
+  $("#prog i").style.width = (cur < 0 ? 0 : Math.round(Math.min(cur, LAST) / LAST * 100)) + "%";
+  $("#prog").title = cur >= 0 && cur <= LAST ? `Página ${cur + 1} de ${LAST + 1}` : "";
   MOMENTOS.forEach(m => {
     const pg = P.filter(p => p.m === m.n), acts = ACTS.filter(a => a.m === m.n);
     const pct = Math.round(((pg.filter(p => S.seen[p.id]).length / pg.length) * .5 + (acts.filter(a => S.acts[a.id] && S.acts[a.id].f).length / Math.max(1, acts.length)) * .5) * 100);
@@ -659,7 +672,7 @@ function paintLikert(el) {
   if (!el) return;
   $$(".likert", el).forEach(g => { const v = (S.val || {})[g.dataset.q];
     $$("button", g).forEach(b => { const on = v === +b.dataset.n; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = on ? `${ic("check", 16, 3)}<span>${b.dataset.n}</span>` : b.dataset.n; });
-    const msg = g.parentNode.querySelector(".lkmsg"); if (msg) msg.textContent = v ? `Elegiste ${v} de 5. Puedes cambiarlo si quieres.` : ""; });
+    const msg = g.parentNode.querySelector(".lkmsg"); if (msg) msg.textContent = v ? `Elegiste ${v}: ${LIK[v - 1].toLowerCase()}. Puedes cambiarlo si quieres.` : ""; });
   const th = $(".thanks", el); if (th) th.textContent = (S.val && S.val.util && S.val.claridad) ? "¡Gracias por contarnos! 💚" : "";
 }
 function hydrateAll() {
@@ -668,6 +681,28 @@ function hydrateAll() {
   paintLikert($("#pg-cuentanos"));
   const a = $("#pg-m5-acciones"); if (a) { $$(".check", a).forEach(x => x.classList.toggle("on", (S.acciones || []).includes(+x.dataset.k))); $$("textarea", a).forEach(t => { if (!t.value) t.value = (S.mural || {})[t.dataset.k] || ""; }); }
   if (P[cur] && P[cur].id === "cierre") paintScores();
+}
+
+/* CONFETI */
+function confetti(page) {
+  const cv = $(".confetti", page); if (!cv) return;
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  const W = cv.offsetWidth, H = cv.offsetHeight; cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  const cols = ["#73CC80", "#00D4C6", "#3C93FA", "#006ECF", "#0FA69D", "#ffffff", "#ffd166"];
+  const N = 180, P = [];
+  for (let i = 0; i < N; i++) P.push({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .55, vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 6, s: 5 + Math.random() * 7, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: cols[i % cols.length], sh: i % 3 });
+  for (let i = 0; i < 80; i++) P.push({ x: Math.random() * W, y: -Math.random() * H * .6, vx: (Math.random() - .5) * 2, vy: Math.random() * 2 + 1, s: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .2, c: cols[i % cols.length], sh: i % 3 });
+  const t0 = performance.now(); cancelAnimationFrame(cv._raf);
+  (function frame(t) {
+    const el = (t - t0) / 1000; ctx.clearRect(0, 0, W, H);
+    P.forEach(p => { p.vy += .32; p.vx *= .99; p.vy = Math.min(p.vy, 5.5); p.x += p.vx + Math.sin((t / 300) + p.r) * .6; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.globalAlpha = Math.max(0, 1 - Math.max(0, el - 4.5) / 1.5); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+      if (p.sh === 0) ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); else if (p.sh === 1) { ctx.beginPath(); ctx.arc(0, 0, p.s / 2.6, 0, 7); ctx.fill(); } else { ctx.beginPath(); ctx.moveTo(0, -p.s / 2); ctx.lineTo(p.s / 2, p.s / 2); ctx.lineTo(-p.s / 2, p.s / 2); ctx.fill(); }
+      ctx.restore(); });
+    if (el < 6) cv._raf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+  })(t0);
 }
 
 /* PANEL DATA */

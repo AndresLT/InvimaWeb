@@ -46,3 +46,59 @@ window.ilustraComunidad = function () {
   });
   return `<div class="ilu" role="img" aria-label="Ilustración de la Comunidad Invima: servidoras y servidores públicos, contratistas, pasantes, judicantes y practicantes, personal tercerizado, personal en comisión, proveedores y ciudadanía.">${cells.join("")}</div>`;
 };
+
+/* Ilustración: personas diversas despidiéndose (saludo con la mano) */
+window.ilustraDespedida = function () {
+  const G = 196, shoe = "#1c2a3a";
+  function person(cx, o) {
+    const sk = o.skin, y0 = 92;
+    let s = "";
+    // pelo trasero (largo)
+    if (o.hair === "long") s += `<path d="M${cx - 21} 70 q0 -30 21 -30 q21 0 21 30 v34 h-42z" fill="${o.hc}"/>`;
+    if (o.hair === "hijab") s += `<path d="M${cx - 24} 74 q0 -36 24 -36 q24 0 24 36 v26 q-24 10 -48 0z" fill="${o.hc}"/>`;
+    // piernas o silla
+    if (o.chair) {
+      s += `<circle cx="${cx - 4}" cy="${G - 26}" r="27" fill="none" stroke="#e6eef5" stroke-width="5"/><circle cx="${cx - 4}" cy="${G - 26}" r="4" fill="#e6eef5"/><circle cx="${cx + 34}" cy="${G - 6}" r="6" fill="none" stroke="#e6eef5" stroke-width="4"/>
+        <path d="M${cx - 26} ${y0 + 8} v44 h56 l4 ${G - y0 - 58}" fill="none" stroke="#e6eef5" stroke-width="5" stroke-linecap="round"/>
+        <rect x="${cx - 6}" y="${y0 + 38}" width="40" height="13" rx="6" fill="${o.pants}"/><rect x="${cx + 24}" y="${y0 + 40}" width="13" height="${G - y0 - 48}" rx="6" fill="${o.pants}"/><ellipse cx="${cx + 34}" cy="${G - 6}" rx="10" ry="4" fill="${shoe}"/>`;
+    } else {
+      s += `<rect x="${cx - 14}" y="${y0 + 48}" width="12" height="${G - y0 - 48}" rx="6" fill="${o.pants}"/><rect x="${cx + 2}" y="${y0 + 48}" width="12" height="${G - y0 - 48}" rx="6" fill="${o.pants}"/>
+        <ellipse cx="${cx - 10}" cy="${G}" rx="10" ry="4.5" fill="${shoe}"/><ellipse cx="${cx + 10}" cy="${G}" rx="10" ry="4.5" fill="${shoe}"/>`;
+      if (o.skirt) s += `<path d="M${cx - 22} ${y0 + 44} h44 l8 34 h-60z" fill="${o.skirt}"/>`;
+    }
+    // brazo izquierdo abajo
+    s += `<rect x="${cx - 34}" y="${y0 + 4}" width="13" height="44" rx="6.5" fill="${o.shirt}"/><circle cx="${cx - 27}" cy="${y0 + 50}" r="6" fill="${sk}"/>`;
+    // brazo derecho saludando
+    s += `<g transform="rotate(-150 ${cx + 27} ${y0 + 8})"><rect x="${cx + 21}" y="${y0 + 4}" width="13" height="46" rx="6.5" fill="${o.shirt}"/><circle cx="${cx + 27.5}" cy="${y0 + 54}" r="7.5" fill="${sk}"/></g>`;
+    // cuello y torso
+    s += `<rect x="${cx - 5}" y="${y0 - 10}" width="10" height="12" fill="${sk}"/><path d="M${cx - 24} ${y0 + 10} q0 -12 13 -12 h22 q13 0 13 12 v${o.chair ? 40 : 46} h-48z" fill="${o.shirt}"/>`;
+    if (o.lanyard) s += `<path d="M${cx - 8} ${y0} l8 15 l8 -15" fill="none" stroke="#73CC80" stroke-width="2"/><rect x="${cx - 4}" y="${y0 + 15}" width="9" height="12" rx="2" fill="#fff"/>`;
+    // cabeza
+    s += `<circle cx="${cx}" cy="${y0 - 26}" r="18" fill="${sk}"/>`;
+    // pelo delantero
+    const hy = y0 - 26;
+    if (o.hair === "short") s += `<path d="M${cx - 18} ${hy - 2} q0 -20 18 -20 q18 0 18 20 q-6 -9 -18 -9 q-12 0 -18 9z" fill="${o.hc}"/>`;
+    if (o.hair === "long") s += `<path d="M${cx - 18} ${hy - 4} q4 -18 20 -16 q14 2 16 16 q-16 -7 -36 0z" fill="${o.hc}"/>`;
+    if (o.hair === "curly") [[-15, -12], [-7, -19], [4, -20], [13, -14], [18, -3], [-18, -1]].forEach(([dx, dy]) => s += `<circle cx="${cx + dx}" cy="${hy + dy}" r="9" fill="${o.hc}"/>`);
+    if (o.hair === "bald") s += `<path d="M${cx - 18} ${hy + 2} q-2 -12 4 -14 M${cx + 18} ${hy + 2} q2 -12 -4 -14" stroke="${o.hc}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    if (o.hair === "hijab") s += `<path d="M${cx - 18} ${hy - 2} q2 -20 18 -20 q16 0 18 20 q-4 -13 -18 -13 q-14 0 -18 13z" fill="${o.hc}"/>`;
+    if (o.hair === "bun") s += `<circle cx="${cx}" cy="${hy - 22}" r="9" fill="${o.hc}"/><path d="M${cx - 18} ${hy - 1} q0 -19 18 -19 q18 0 18 19 q-8 -10 -18 -10 q-10 0 -18 10z" fill="${o.hc}"/>`;
+    if (o.glasses) s += `<g fill="none" stroke="#1c2a3a" stroke-width="2"><circle cx="${cx - 7}" cy="${hy}" r="5.5"/><circle cx="${cx + 7}" cy="${hy}" r="5.5"/><path d="M${cx - 1.5} ${hy}h3"/></g>`;
+    if (o.beard) s += `<path d="M${cx - 15} ${hy + 4} q15 20 30 0 q-2 12 -15 14 q-13 -2 -15 -14z" fill="${o.hc}"/>`;
+    // sonrisa
+    s += `<path d="M${cx - 6} ${hy + 8} q6 6 12 0" fill="none" stroke="#5a2e1a" stroke-width="2" stroke-linecap="round"/>`;
+    return s;
+  }
+  const P = [
+    { skin: "#c68642", hair: "long", hc: "#3b2214", shirt: "#006ECF", pants: "#2D3F54", lanyard: true },
+    { skin: "#5c3a21", hair: "curly", hc: "#1b1b1b", shirt: "#73CC80", pants: "#52647A" },
+    { skin: "#ffdbac", hair: "bald", hc: "#cfcfcf", shirt: "#3C93FA", pants: "#2D3F54", glasses: true, beard: false, chair: true },
+    { skin: "#8d5524", hair: "hijab", hc: "#00D4C6", shirt: "#028183", pants: "#2D3F54", skirt: "#0FA69D" },
+    { skin: "#e0ac69", hair: "short", hc: "#4a2c1a", shirt: "#ffffff", pants: "#3C93FA", beard: true },
+    { skin: "#f1c27d", hair: "bun", hc: "#7a4b2a", shirt: "#0FA69D", pants: "#2D3F54", glasses: true }
+  ];
+  const W = 92;
+  let out = `<svg viewBox="-6 30 ${W * P.length + 12} 176" width="100%" role="img" aria-label="Ilustración de personas diversas despidiéndose con la mano" style="display:block">`;
+  P.forEach((o, k) => { out += person(W * k + W / 2 + (o.chair ? -6 : 0), o); });
+  return out + "</svg>";
+};
