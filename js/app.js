@@ -53,7 +53,10 @@ const brandDots = () => `<div class="brand-dots" aria-hidden="true">${["#004C94"
 /* ---------------- TRACKING (anónimo) ---------------- */
 const LS = "invima-consciente-v1";
 const PROTOCOLO = "docs/protocolo-invima-consciente.pdf";
-const LIK = ["Nada", "Poco", "Algo", "Bastante", "Mucho"];
+const LIK = {
+  util: ["Nada útil", "Poco útil", "Moderadamente útil", "Útil", "Muy útil"],
+  claridad: ["Totalmente en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo (neutral)", "De acuerdo", "Totalmente de acuerdo"]
+};
 const blank = () => ({ v: 1, visits: 0, first: null, last: null, seen: {}, vids: {}, acts: {}, val: {}, mural: {}, acciones: [] });
 let S = blank();
 try { const raw = localStorage.getItem(LS); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
@@ -392,7 +395,7 @@ add("como-se-creo", "Cómo se creó este material", 0, () => `<div class="pg">
   <div class="row mt8" style="gap:36px">
     <div style="flex:1">
       <p class="lead" style="font-size:16.5px">Partimos de una encuesta de diagnóstico a la comunidad Invima: cuánto se conocía el protocolo y cómo preferían que se divulgara. Las opciones más votadas definieron los formatos:</p>
-      <div class="vchips mt16">${["Charlas con diapositivas", "Videos cortos", "Casos prácticos", "Piezas gráficas", "Dummies y QR"].map((x, k) => `<span class="chip win" style="background:${["#004C94", "#006ECF", "#0FA69D", "#028183", "#3C93FA"][k]}">${ic("star", 16)} ${x}</span>`).join("")}</div>
+      <div class="vchips mt16" style="justify-content:center">${["Charlas con diapositivas", "Videos cortos", "Casos prácticos", "Piezas gráficas", "Dummies y QR"].map((x, k) => `<span class="chip win" style="background:${["#004C94", "#006ECF", "#0FA69D", "#028183", "#3C93FA"][k]}">${ic("star", 16)} ${x}</span>`).join("")}</div>
       <p class="lead mt24" style="font-size:16.5px">El protocolo es un documento extenso. Aquí lo convertimos en lo esencial: qué es, cómo reconocer una situación, qué hacer y qué te protege.</p>
       <div class="note mt24">${ic("info", 20)}<span>Los casos de esta cartilla son <b>hipotéticos</b> y tienen finalidad pedagógica. Las rutas se presentan conforme al texto oficial del protocolo.</span></div>
     </div>
@@ -528,12 +531,12 @@ add("reto-final", "Reto final", 5, () => `<div class="pg">${head(5, "Reto final"
 /* CUÉNTANOS */
 add("cuentanos", "Cuéntanos", 0, () => `<div class="pg">
   <div class="kicker">Cuéntanos · anónimo</div><h2 class="h2">¿Cómo te fue con la cartilla?</h2>
-  <p class="lead" style="font-size:16.5px">Tu opinión nos ayuda a mejorar. Elige un número del 1 al 5.</p>
+  <p class="lead" style="font-size:16.5px">Tu opinión nos ayuda a mejorar. Elige una opción en cada pregunta.</p>
   <div class="row mt24 cuent" style="gap:30px;flex:1;align-items:flex-start">
     <div class="col" style="flex:1;gap:18px">
-      ${[["util", "¿Qué tan útil te pareció esta cartilla?"], ["claridad", "Del 1 al 5, ¿consideras que aprendiste o que ahora tienes mayor claridad sobre el protocolo?"]].map(([k, q]) => `<div class="card lk-card">
+      ${[["util", "¿Qué tan útil te pareció esta cartilla?"], ["claridad", "¿En qué medida consideras que lograste comprender los temas abordados en la cartilla?"]].map(([k, q]) => `<div class="card lk-card">
         <div class="fh" style="font-weight:600;font-size:18px;color:var(--navy);line-height:1.35">${q}</div>
-        <div class="likert mt16" data-q="${k}">${LIK.map((l, j) => `<div class="lk"><button data-n="${j + 1}" aria-pressed="false" aria-label="${j + 1}: ${l}">${j + 1}</button><span>${l}</span></div>`).join("")}</div>
+        <div class="likert mt16" data-q="${k}">${LIK[k].map((l, j) => `<div class="lk"><button data-n="${j + 1}" aria-pressed="false" aria-label="${j + 1}: ${l}">${j + 1}</button><span>${l}</span></div>`).join("")}</div>
         <div class="lkmsg small" aria-live="polite"></div></div>`).join("")}
       <div class="thanks fh" aria-live="polite"></div>
     </div>
@@ -556,7 +559,7 @@ add("cierre", "Cierre", 0, () => `<div class="pg">
     <div style="flex:1" class="col">
       <h4 class="fh" style="font-size:15px;margin-bottom:10px">Tu recorrido</h4>
       <div id="recorrido"></div>
-      <div class="cierre-pj">${ilustraDespedida()}</div>
+      <div class="cierre-pj"><div class="cpj-t fh">¡Hasta pronto!</div><div class="cpj-in">${ilustraDespedida()}</div></div>
     </div>
   </div>
   <p class="foot-note">Estrategia de divulgación y apropiación del Protocolo INVIMA CONSCIENTE. Contenidos sujetos a validación institucional.</p>
@@ -671,8 +674,8 @@ function paintScores() {
 function paintLikert(el) {
   if (!el) return;
   $$(".likert", el).forEach(g => { const v = (S.val || {})[g.dataset.q];
-    $$("button", g).forEach(b => { const on = v === +b.dataset.n; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = on ? `${ic("check", 16, 3)}<span>${b.dataset.n}</span>` : b.dataset.n; });
-    const msg = g.parentNode.querySelector(".lkmsg"); if (msg) msg.textContent = v ? `Elegiste ${v}: ${LIK[v - 1].toLowerCase()}. Puedes cambiarlo si quieres.` : ""; });
+    $$("button", g).forEach(b => { const on = v === +b.dataset.n; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = on ? `${ic("check", 16, 3)}<b>${b.dataset.n}</b>` : b.dataset.n; });
+    const msg = g.parentNode.querySelector(".lkmsg"); if (msg) msg.textContent = v ? `Elegiste ${v}: «${LIK[g.dataset.q][v - 1]}». Puedes cambiarlo si quieres.` : ""; });
   const th = $(".thanks", el); if (th) th.textContent = (S.val && S.val.util && S.val.claridad) ? "¡Gracias por contarnos! 💚" : "";
 }
 function hydrateAll() {
@@ -755,7 +758,7 @@ function renderPanel(D) {
         <div class="small mt8">Reproducciones: ${vidKeys.map(k => `${k === "personajes" ? "Personajes" : k.toUpperCase()}: <b>${D.filter(d => d.vids && d.vids[k]).length}</b>`).join(" · ")}</div>
       </div>
       <div class="pbox" style="flex:none"><h4>${ic("users", 18)} Valoración</h4>
-        <div class="small">Utilidad: <b>${avgVal("util")}</b>/5 · Aprendizaje o claridad: <b>${avgVal("claridad")}</b>/5 · (${nval} respuestas)</div>
+        <div class="small">Utilidad: <b>${avgVal("util")}</b>/5 · Comprensión de los temas: <b>${avgVal("claridad")}</b>/5 · (${nval} respuestas)</div>
         <div class="small mt8">Compromisos más elegidos: ${ACCIONES.map((a, k) => ({ t: a.t, n: accCount[k] })).sort((x, y) => y.n - x.n).slice(0, 4).map(x => `${esc(x.t)} <b>${x.n}</b>`).join(" · ")}</div>
       </div>
       <div class="pbox" style="flex:1"><h4>${ic("pen", 18)} Mural digital (${murals.length}) <span class="small" style="font-weight:400">· revisar antes de publicar</span></h4>

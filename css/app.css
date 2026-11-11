@@ -485,12 +485,16 @@ body.mob .mintro .pg{padding-top:28px}
 .mural .mt-t{display:flex;align-items:center;gap:8px;color:var(--lc)}
 .mural label:nth-child(3) .mt-t{color:#2f8f3d}
 .likert{align-items:flex-start}
-.lk{display:flex;flex-direction:column;align-items:center;gap:6px}
-.lk span{font-size:12.5px;color:var(--muted);font-family:var(--fh);font-weight:500}
+.lk{display:flex;flex-direction:column;align-items:center;gap:6px;width:150px}
+.lk button{width:100%!important}
+.lk span{font-size:12.5px;line-height:1.25;text-align:center;color:var(--muted);font-family:var(--fh);font-weight:500}
 .lk button.on + span{color:var(--navy);font-weight:700}
 .logo-wide{background:#fff;border-radius:18px;padding:14px 22px;display:flex;justify-content:center}
 .logo-wide img{width:100%;max-height:96px;object-fit:contain;display:block}
-.cierre-pj{height:auto;margin-top:auto;display:block;padding:0 6px}
+.cierre-pj{flex:1;min-height:0;margin-top:16px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,rgba(0,212,198,.28),rgba(255,255,255,.06) 60%,rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.14);padding:14px 14px 0;display:flex;flex-direction:column}
+.cpj-in{flex:1;min-height:0}
+.cpj-t{text-align:center;font-weight:700;font-size:20px;color:#bff7f1;letter-spacing:.02em}
+.closing .logo-wide{margin-top:auto}
 .cierre-pj svg{filter:drop-shadow(0 10px 14px rgba(0,0,0,.25))}
 .gracias-pg{background:radial-gradient(900px 500px at 15% 10%,rgba(0,212,198,.45),transparent 60%),radial-gradient(800px 500px at 90% 90%,rgba(115,204,128,.4),transparent 60%),linear-gradient(135deg,#0b2b4f,#004C94 45%,#006ECF 70%,#0FA69D);color:#fff}
 .gracias-pg .pg{align-items:center;justify-content:center;text-align:center}
@@ -506,7 +510,11 @@ body.mob .acc .check{width:100%}
 body.mob .qside{display:none}
 body.mob .ruta-foot{position:relative;bottom:auto;margin-top:24px;padding-bottom:20px}
 body.mob .page:has(.ruta-foot)::before{height:200px}
-body.mob .lk button{width:52px}
+body.mob .likert{flex-direction:column;gap:8px}
+body.mob .lk{width:100%;flex-direction:row;gap:12px}
+body.mob .lk button{width:52px!important;height:46px;flex:none}
+body.mob .lk span{font-size:13.5px;text-align:left}
+body.mob .cierre-pj{height:260px;flex:none}
 body.mob .likert{gap:4px}
 body.mob .gr-h{font-size:48px}
 body.mob .gracias-pg .pg{min-height:calc(100vh - 160px)}

@@ -92,13 +92,16 @@ window.ilustraDespedida = function () {
   const P = [
     { skin: "#c68642", hair: "long", hc: "#3b2214", shirt: "#006ECF", pants: "#2D3F54", lanyard: true },
     { skin: "#5c3a21", hair: "curly", hc: "#1b1b1b", shirt: "#73CC80", pants: "#52647A" },
-    { skin: "#ffdbac", hair: "bald", hc: "#cfcfcf", shirt: "#3C93FA", pants: "#2D3F54", glasses: true, beard: false, chair: true },
+    { skin: "#ffdbac", hair: "bald", hc: "#cfcfcf", shirt: "#3C93FA", pants: "#2D3F54", glasses: true, chair: true },
     { skin: "#8d5524", hair: "hijab", hc: "#00D4C6", shirt: "#028183", pants: "#2D3F54", skirt: "#0FA69D" },
     { skin: "#e0ac69", hair: "short", hc: "#4a2c1a", shirt: "#ffffff", pants: "#3C93FA", beard: true },
-    { skin: "#f1c27d", hair: "bun", hc: "#7a4b2a", shirt: "#0FA69D", pants: "#2D3F54", glasses: true }
+    { skin: "#f1c27d", hair: "bun", hc: "#7a4b2a", shirt: "#0FA69D", pants: "#2D3F54", glasses: true },
+    { skin: "#a0673a", hair: "short", hc: "#d9d9d9", shirt: "#004C94", pants: "#52647A", glasses: true }
   ];
-  const W = 92;
-  let out = `<svg viewBox="-6 30 ${W * P.length + 12} 176" width="100%" role="img" aria-label="Ilustración de personas diversas despidiéndose con la mano" style="display:block">`;
-  P.forEach((o, k) => { out += person(W * k + W / 2 + (o.chair ? -6 : 0), o); });
+  // fila de atrás (más pequeña y elevada) y fila de adelante
+  const back = [[1, 58], [3, 168], [5, 278], [6, 388]], front = [[0, 113], [2, 222], [4, 335]];
+  let out = `<svg viewBox="0 -78 446 286" width="100%" height="100%" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Ilustración de personas diversas despidiéndose con la mano" style="display:block">`;
+  back.forEach(([k, x]) => { out += `<g transform="translate(${x} 0) scale(.88) translate(0 -96)">${person(0, P[k])}</g>`; });
+  front.forEach(([k, x]) => { out += `<g transform="translate(${x} 10)">${person(0, P[k])}</g>`; });
   return out + "</svg>";
 };
