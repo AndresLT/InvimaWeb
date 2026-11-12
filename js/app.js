@@ -140,9 +140,9 @@ function videoBox(key) {
   const prod = v && v.estado === "produccion";
   return `<div class="vbox"><div class="vph"><span class="badge">${prod ? "En producción" : "Espacio reservado"}</span><div class="play">${ic("play", 34)}</div><b>${esc(v ? v.titulo : "Video")}</b><span>${prod ? "Este video está en producción. Muy pronto lo verás aquí mismo." : "El video se incorporará aquí, dentro de la cartilla."}</span></div><div class="seal">INVIMA CONSCIENTE</div></div>`;
 }
-function videoPage(key, n) {
+function videoPage(key, n, kick, title) {
   const I = VIDEO_INTROS[key];
-  return `<div class="pg">${head(n, n ? momKicker(n) + " · Video" : "Los personajes · Video", n ? esc(VIDEOS[key].titulo.replace(/^Video \d · /, "")) : "Conoce a quienes te acompañan")}
+  return `<div class="pg">${head(n, kick || (n ? momKicker(n) + " · Video" : "Los personajes · Video"), title || (n ? esc(VIDEOS[key].titulo.replace(/^Video \d · /, "")) : "Conoce a quienes te acompañan"))}
   <div class="vgrid"><div class="vinfo">
     <h4>De qué trata</h4><p>${esc(I.contexto)}</p>
     <h4>Qué busca</h4><p>${esc(I.busca)}</p>
@@ -356,6 +356,9 @@ add("bienvenida", "Bienvenida", 0, () => `<div class="pg">
       <div class="small" style="font-size:14px"><b class="fh" style="color:var(--navy);font-size:15px">Tu participación es anónima</b><br>No te pedimos tu nombre ni datos personales. Nadie sabe quién respondió qué.</div></div>
   </div>
 </div>`);
+
+/* CONTEXTO (video) */
+add("contexto", "El contexto · Video", 0, () => videoPage("contexto", 0, "El contexto · Video", "¿Por qué INVIMA CONSCIENTE?"));
 
 /* QUÉ ES */
 add("que-es", "¿Qué es INVIMA CONSCIENTE?", 0, () => `<div class="pg">

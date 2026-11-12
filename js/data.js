@@ -9,12 +9,13 @@
    Para insertar un video: poner la ruta del archivo en src
    (ej. "video/v1.mp4"). Si src es null, se muestra el espacio reservado. */
 window.VIDEOS = {
-  personajes: { src: null, poster: null, titulo: "Conoce a los personajes de NO ES NORMAL", estado: "listo" },
-  v1: { src: null, poster: null, titulo: "Video 1 · ¿Qué es INVIMA CONSCIENTE?", estado: "listo" },
-  v2: { src: null, poster: null, titulo: "Video 2 · ¿Esto que vi es normal?", estado: "listo" },
-  v3: { src: null, poster: null, titulo: "Video 3 · ¿Qué hago si lo vivo o lo veo?", estado: "listo" },
-  v4: { src: null, poster: null, titulo: "Video 4 · ¿Qué me protege si hablo?", estado: "produccion" },
-  v5: { src: null, poster: null, titulo: "Video 5 · ¿Qué puedo hacer para que esto se mantenga?", estado: "produccion" }
+  contexto: { src: "video/contexto.mp4", poster: "video/contexto.jpg", titulo: "El contexto: ¿por qué INVIMA CONSCIENTE?", estado: "listo" },
+  personajes: { src: "video/personajes.mp4", poster: "video/personajes.jpg", titulo: "Conoce a los personajes de NO ES NORMAL", estado: "listo" },
+  v1: { src: "video/v1.mp4", poster: "video/v1.jpg", titulo: "Video 1 · ¿Qué es INVIMA CONSCIENTE?", estado: "listo" },
+  v2: { src: "video/v2.mp4", poster: "video/v2.jpg", titulo: "Video 2 · ¿Esto que vi es normal?", estado: "listo" },
+  v3: { src: "video/v3.mp4", poster: "video/v3.jpg", titulo: "Video 3 · ¿Qué hago si lo vivo o lo veo?", estado: "listo" },
+  v4: { src: "video/v4.mp4", poster: "video/v4.jpg", titulo: "Video 4 · ¿Qué me protege si hablo?", estado: "listo" },
+  v5: { src: "video/v5.mp4", poster: "video/v5.jpg", titulo: "Video 5 · ¿Qué puedo hacer para que esto se mantenga?", estado: "listo" }
 };
 
 /* ---------- PERSONAJES ----------
@@ -37,6 +38,11 @@ window.MOMENTOS = [
 
 /* ---------- INTRO DE CADA VIDEO ---------- */
 window.VIDEO_INTROS = {
+  contexto: {
+    contexto: "Hay cosas que, de tanto verlas, terminamos creyendo normales. Este video recorre el problema en el mundo y en Colombia, los acuerdos internacionales y las leyes nacionales que nos comprometen, y cómo nace INVIMA CONSCIENTE.",
+    busca: "Que entiendas por qué una entidad como el Invima necesita hablar de violencias, acoso y discriminación, y por qué la respuesta es una cultura basada en el respeto, la prevención y la protección integral.",
+    fijate: ["¿Qué cifras te llaman la atención?", "¿Qué compromisos ha asumido el país?", "¿Cómo se conecta todo esto con el Invima?"]
+  },
   personajes: {
     contexto: "Gerardo, Sandra, Julio, Catalina y Arturo te acompañarán en toda la campaña: en los videos, los casos, las piezas gráficas y los dummies de las zonas comunes.",
     busca: "Que los conozcas antes de empezar. No son víctimas ni agresores: son guías que hacen preguntas e invitan a reflexionar.",
